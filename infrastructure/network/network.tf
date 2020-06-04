@@ -157,10 +157,23 @@ resource "aws_route_table_association" "db" {
   subnet_id      = aws_subnet.db[count.index].id
 }
 
+resource "aws_db_subnet_group" "db_subnets" {
+  name       = "main"
+  subnet_ids = aws_subnet.db.*.id
+
+  tags = {
+    Name = "${local.name_tag_prefix}-DbSubnetGroup"
+    Env     = var.environment
+    Project = var.project_name
+  }
+}
+
+
 
 
 resource "aws_network_acl" "public" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id     = aws_vpc.vpc.id
+  subnet_ids = aws_subnet.public.*.id
   tags = {
     Name = "${local.name_tag_prefix}-PublicNACL"
     Env     = var.environment
@@ -206,6 +219,7 @@ resource "aws_network_acl" "public" {
 
 resource "aws_network_acl" "private" {
   vpc_id = aws_vpc.vpc.id
+  subnet_ids = aws_subnet.private.*.id
   tags = {
     Name = "${local.name_tag_prefix}-PrivateNACL"
     Env     = var.environment
@@ -220,7 +234,18 @@ resource "aws_network_acl_rule" "private_in" {
   egress         = false
   protocol       = -1
   rule_action    = "allow"
+  cidr_block     = var.networks.cidr_block
+}
+
+resource "aws_network_acl_rule" "private_in_ephemeral" {
+  network_acl_id = aws_network_acl.private.id
+  rule_number    = 200
+  egress         = false
+  protocol       = 6
+  rule_action    = "allow"
   cidr_block     = "0.0.0.0/0"
+  from_port      = 1024
+  to_port        = 65535
   
 }
 
@@ -231,5 +256,42 @@ resource "aws_network_acl_rule" "private_out" {
   protocol       = -1
   rule_action    = "allow"
   cidr_block     = "0.0.0.0/0"
+  
+}
+
+resource "aws_network_acl" "db" {
+  vpc_id = aws_vpc.vpc.id
+  subnet_ids = aws_subnet.db.*.id
+  tags = {
+    Name = "${local.name_tag_prefix}-DbNACL"
+    Env     = var.environment
+    Project = var.project_name
+
+  }
+}
+
+resource "aws_network_acl_rule" "db_in" {
+  count          = length(aws_subnet.private)
+  network_acl_id = aws_network_acl.db.id
+  rule_number    = count.index + 1 * 100
+  egress         = false
+  protocol       = 6
+  rule_action    = "allow"
+  cidr_block     = aws_subnet.private[count.index].cidr_block
+  from_port      = var.db_port
+  to_port        = var.db_port
+}
+
+
+resource "aws_network_acl_rule" "db_out" {
+  count          = length(aws_subnet.private)
+  network_acl_id = aws_network_acl.db.id
+  rule_number    = count.index + 1 * 100
+  egress         = true
+  protocol       = 6
+  rule_action    = "allow"
+  cidr_block     = aws_subnet.private[count.index].cidr_block
+  from_port      = 1024
+  to_port        = 65535
   
 }

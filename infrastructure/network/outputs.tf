@@ -1,5 +1,5 @@
-output "instance_ip_addr" {
-  value = cidrsubnet("172.16.0.0/16", 8, 0)
+output "vpc" {
+  value = aws_vpc.vpc.id
 }
 
 output "total_subnets" {
