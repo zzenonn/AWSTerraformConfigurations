@@ -4,11 +4,6 @@ This template is for provisioning of
   EC2 and RDS
 */
 
-provider "aws" {
-  profile = "terraform"
-  region  = "ap-southeast-1"
-}
-
 # No inbound rules because this is meant to be access via
 # session manager
 resource "aws_security_group" "bastion" {

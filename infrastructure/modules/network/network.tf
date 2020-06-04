@@ -44,18 +44,19 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.vpc.id
   map_public_ip_on_launch = true
   cidr_block              = (var.networks.private_cidr_bits < var.networks.db_cidr_bits ? 
-                             cidrsubnet(var.networks.cidr_block, 
+                             (cidrsubnet(var.networks.cidr_block, 
                                         var.networks.public_cidr_bits, 
                                         var.networks.db_subnets * 
                                         pow(2, var.networks.public_cidr_bits - var.networks.db_cidr_bits ) + 
                                         pow(2, var.networks.public_cidr_bits - var.networks.private_cidr_bits) * 
-                                        var.networks.private_subnets + count.index) : 
-                             cidrsubnet(var.networks.cidr_block, 
+                                        var.networks.private_subnets + count.index)
+                                        ) : (
+                              cidrsubnet(var.networks.cidr_block, 
                                         var.networks.public_cidr_bits, 
                                         var.networks.private_subnets * 
                                         pow(2, var.networks.public_cidr_bits - var.networks.private_cidr_bits) + 
                                         pow(2, var.networks.public_cidr_bits - var.networks.db_cidr_bits ) * 
-                                        var.networks.db_subnets + count.index))
+                                        var.networks.db_subnets + count.index)))
   # Distributes subnets in each AZ
   availability_zone_id = element(data.aws_availability_zones.azs.zone_ids, count.index)
   tags = {
@@ -116,14 +117,15 @@ resource "aws_subnet" "private" {
   # Starts from the last subnet in the public subnet. Sets up variable length subnetting
   cidr_block = (var.networks.private_cidr_bits < var.networks.db_cidr_bits || 
                 var.networks.private_cidr_bits == var.networks.db_cidr_bits ? 
-                  cidrsubnet(var.networks.cidr_block, 
+                  (cidrsubnet(var.networks.cidr_block, 
                              var.networks.private_cidr_bits, 
-                             count.index) : 
-                  cidrsubnet(var.networks.cidr_block, 
+                             count.index) 
+                            ) : (
+                   cidrsubnet(var.networks.cidr_block, 
                              var.networks.private_cidr_bits, 
                              var.networks.db_subnets * 
                              pow(2,var.networks.private_cidr_bits - var.networks.db_cidr_bits) + 
-                             count.index))
+                             count.index)))
   # Distributes subnets in each AZ
   availability_zone_id = element(data.aws_availability_zones.azs.zone_ids, count.index)
   tags = {
@@ -145,14 +147,15 @@ resource "aws_subnet" "db" {
   # Starts from the last subnet in the public subnet. Sets up variable length subnetting
   cidr_block = (var.networks.db_cidr_bits < var.networks.private_cidr_bits || 
                 var.networks.private_cidr_bits == var.networks.db_cidr_bits ? 
-                cidrsubnet(var.networks.cidr_block, 
+                (cidrsubnet(var.networks.cidr_block, 
                            var.networks.db_cidr_bits, 
-                           count.index) : 
-                cidrsubnet(var.networks.cidr_block, 
+                           count.index) 
+                           ) : ( 
+                 cidrsubnet(var.networks.cidr_block, 
                            var.networks.db_cidr_bits, 
                            var.networks.private_subnets * 
                            pow(2,var.networks.db_cidr_bits - var.networks.private_cidr_bits) + 
-                           count.index))
+                           count.index)))
   # Distributes subnets in each AZ
   availability_zone_id = element(data.aws_availability_zones.azs.zone_ids, count.index)
   tags = {
