@@ -7,13 +7,30 @@ output "total_subnets" {
 }
 
 output "db_subnet_group" {
-  value = aws_db_subnet_group.db_subnets.id
+  value = aws_db_subnet_group.db_subnets.name
 }
 
 output "db_port" {
   value = var.db_port
 }
 
-output "name_tag_prefix" {
-  value = local.name_tag_prefix
+output "project_name" {
+  value = var.project_name
 }
+
+output "environment" {
+  value = var.environment
+}
+
+output "public_subnets" {
+  value = aws_subnet.public.*.id
+}
+
+output "private_subnets" {
+  value = aws_subnet.private.*.id
+}
+
+output "db_subnets" {
+  value = aws_subnet.db.*.id
+}
+

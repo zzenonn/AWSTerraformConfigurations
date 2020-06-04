@@ -45,6 +45,8 @@ variable "networks" {
 #  }
 }
 
+data "aws_availability_zones" "azs" {}
+
 
 locals {
   total_subnets     = var.networks.public_subnets + var.networks.private_subnets + var.networks.db_subnets 

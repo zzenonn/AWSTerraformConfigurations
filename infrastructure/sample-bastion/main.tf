@@ -8,8 +8,12 @@ module "network" {
 
 module "instances" {
     source  = "../modules/instances"
-    name_tag_prefix = module.network.name_tag_prefix
+    project_name    = module.network.project_name
+    environment     = module.network.environment
     db_port         = module.network.db_port
     vpc             = module.network.vpc
+    private_subnets = module.network.private_subnets
+    public_subnets  = module.network.public_subnets
+    db_subnets      = module.network.db_subnets
     db_subnet_group = module.network.db_subnet_group
 }
