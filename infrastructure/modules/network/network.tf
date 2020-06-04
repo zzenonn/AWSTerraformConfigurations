@@ -158,7 +158,7 @@ resource "aws_route_table_association" "db" {
 }
 
 resource "aws_db_subnet_group" "db_subnets" {
-  name       = "main"
+  name       = lower("${local.name_tag_prefix}-db-subnet-group")
   subnet_ids = aws_subnet.db.*.id
 
   tags = {
@@ -167,8 +167,6 @@ resource "aws_db_subnet_group" "db_subnets" {
     Project = var.project_name
   }
 }
-
-
 
 
 resource "aws_network_acl" "public" {
