@@ -141,7 +141,7 @@ resource "aws_db_instance" "db" {
   iops                    = var.environment == "Prod" ? 10000 : 0
   instance_class          = var.environment == "Prod" ? "db.t3.large" : "db.t3.micro"
   multi_az                = var.environment == "Prod" ? true : false
-  skip_final_snapshot     = var.environment == "Prod" ? true : false
+  skip_final_snapshot     = var.environment == "Prod" ? false : true
   identifier              = lower("${local.name_tag_prefix}-Db")
   engine                  = var.db_engine
   name                    = lower("${var.project_name}${var.environment}Db")

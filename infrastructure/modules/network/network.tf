@@ -2,16 +2,8 @@
   VPC, Internet Gateway, Subnets, 
   NAT Gateway and Route Tables
 
-  Variables used:
-  networks
-  project_name
-  environment
 */
 
-provider "aws" {
-  profile = "terraform"
-  region  = "ap-southeast-1"
-}
 
 resource "aws_vpc" "vpc" {
   cidr_block            = var.networks.cidr_block
