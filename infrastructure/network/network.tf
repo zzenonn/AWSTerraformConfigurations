@@ -14,7 +14,8 @@ provider "aws" {
 }
 
 resource "aws_vpc" "vpc" {
-  cidr_block       = var.networks.cidr_block
+  cidr_block            = var.networks.cidr_block
+  enable_dns_hostnames  = true
   tags = {
     Name    = "${local.name_tag_prefix}-Vpc"
     Env     = var.environment
@@ -47,9 +48,10 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_subnet" "public" {
-  count      = var.networks.public_subnets
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = var.networks.private_cidr_bits < var.networks.db_cidr_bits ? cidrsubnet(var.networks.cidr_block, var.networks.public_cidr_bits, var.networks.db_subnets * pow(2, var.networks.public_cidr_bits - var.networks.db_cidr_bits ) + pow(2, var.networks.public_cidr_bits - var.networks.private_cidr_bits) * var.networks.private_subnets + count.index) : cidrsubnet(var.networks.cidr_block, var.networks.public_cidr_bits, var.networks.private_subnets * pow(2, var.networks.public_cidr_bits - var.networks.private_cidr_bits) + pow(2, var.networks.public_cidr_bits - var.networks.db_cidr_bits ) * var.networks.db_subnets + count.index)
+  count                   = var.networks.public_subnets
+  vpc_id                  = aws_vpc.vpc.id
+  map_public_ip_on_launch = true
+  cidr_block              = var.networks.private_cidr_bits < var.networks.db_cidr_bits ? cidrsubnet(var.networks.cidr_block, var.networks.public_cidr_bits, var.networks.db_subnets * pow(2, var.networks.public_cidr_bits - var.networks.db_cidr_bits ) + pow(2, var.networks.public_cidr_bits - var.networks.private_cidr_bits) * var.networks.private_subnets + count.index) : cidrsubnet(var.networks.cidr_block, var.networks.public_cidr_bits, var.networks.private_subnets * pow(2, var.networks.public_cidr_bits - var.networks.private_cidr_bits) + pow(2, var.networks.public_cidr_bits - var.networks.db_cidr_bits ) * var.networks.db_subnets + count.index)
   # Distributes subnets in each AZ
   availability_zone_id = element(data.aws_availability_zones.azs.zone_ids, count.index)
   tags = {
@@ -153,4 +155,81 @@ resource "aws_route_table_association" "db" {
   count          = var.networks.db_subnets
   route_table_id = element(aws_route_table.db.*.id, count.index)
   subnet_id      = aws_subnet.db[count.index].id
+}
+
+
+
+resource "aws_network_acl" "public" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "${local.name_tag_prefix}-PublicNACL"
+    Env     = var.environment
+    Project = var.project_name
+  }
+
+  egress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = var.networks.cidr_block
+    from_port  = 0
+    to_port    = 0
+
+  }
+  egress {
+    protocol   = 6
+    rule_no    = 200
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 65535
+  }
+  ingress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = var.networks.cidr_block
+    from_port  = 0
+    to_port    = 0
+
+  }
+  ingress {
+    protocol   = 6
+    rule_no    = 200
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 65535
+  }
+}
+
+
+resource "aws_network_acl" "private" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "${local.name_tag_prefix}-PrivateNACL"
+    Env     = var.environment
+    Project = var.project_name
+
+  }
+}
+
+resource "aws_network_acl_rule" "private_in" {
+  network_acl_id = aws_network_acl.private.id
+  rule_number    = 100
+  egress         = false
+  protocol       = -1
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  
+}
+
+resource "aws_network_acl_rule" "private_out" {
+  network_acl_id = aws_network_acl.private.id
+  rule_number    = 100
+  egress         = true
+  protocol       = -1
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  
 }
