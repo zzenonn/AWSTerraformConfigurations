@@ -13,12 +13,13 @@ module "network" {
 
 module "webapp" {
     source  = "../modules/asg_and_alb"
-    project_name    = module.network.project_name
-    environment     = module.network.environment
-    vpc             = module.network.vpc
-    private_subnets = module.network.private_subnets
-    public_subnets  = module.network.public_subnets
-    base_ami        = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+    project_name        = module.network.project_name
+    environment         = module.network.environment
+    vpc                 = module.network.vpc
+    private_subnets     = module.network.private_subnets
+    public_subnets      = module.network.public_subnets
+    base_ami            = "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+    target_group_arns   = [aws_lb_target_group.app.arn]
     userdata        = <<-EOF
         #!/bin/bash
         # Install Apache Web Server and PHP

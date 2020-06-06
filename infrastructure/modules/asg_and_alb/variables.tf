@@ -32,6 +32,7 @@ variable "userdata" {
 
 variable "base_ami" {
   type        = string
+  default     = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
   description = "Must be in the form of an SSM parameter key. See https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-public-parameters.html"
 }
 
@@ -45,6 +46,12 @@ variable "alb_healthcheck" {
   type        = string
   default     = "EC2"
   description = "Determines an EC2 or ELB healthcheck"
+}
+
+variable "target_group_arns" {
+  type        = set(string)
+  default     = []
+  description = "Target group the ASG will automatically add to"
 }
 
 variable "iam_policy" {
@@ -87,5 +94,5 @@ locals {
   name_tag_prefix   = "${var.project_name}-${var.environment}"
   num_pub_subnet    = length(var.public_subnets)
   num_azs           = length(data.aws_availability_zones.azs.zone_ids)
-  elb_subnets       = local.num_pub_subnet > local.num_azs ? slice(var.public_subnets, 0, local.num_azs - 1) : var.public_subnets
+  elb_subnets       = local.num_pub_subnet > local.num_azs ? slice(var.public_subnets, 0, local.num_azs) : var.public_subnets
 }

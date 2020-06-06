@@ -15,6 +15,14 @@ resource "aws_security_group" "elb" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow from anywhere to the app port ${var.elb_port} on this ELB"
   }
+  
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = -1
+    cidr_blocks      = ["0.0.0.0/0"]
+    description      = "Allow to everywhere from ELB"
+  }
 
   tags = {
     Name    = "${local.name_tag_prefix}-Asg-Sg"
@@ -76,6 +84,13 @@ resource "aws_security_group" "asg_instances" {
     security_groups  = [aws_security_group.elb.id]
     description      = "Allow from ELB to this instance"
   }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = -1
+    cidr_blocks      = ["0.0.0.0/0"]
+    description      = "Allow to everywhere"
+  }
 
   tags = {
     Name    = "${local.name_tag_prefix}-Asg-Sg"
@@ -98,7 +113,7 @@ resource "aws_launch_template" "instances" {
   instance_type = var.environment == "Prod" ? "t3.medium" : "t3.micro"
 
   monitoring {
-    enabled = var.environment == "Prod" ? true : false
+    enabled = true #var.environment == "Prod" ? true : false
   }
 
   network_interfaces {
@@ -127,9 +142,11 @@ resource "aws_autoscaling_group" "instances" {
   health_check_type         = var.alb_healthcheck
   force_delete              = true
   vpc_zone_identifier       = var.private_subnets
+  target_group_arns         = length(var.target_group_arns) == 0 ? null : var.target_group_arns 
   
   launch_template {
-    name = aws_launch_template.instances.name
+    name    = aws_launch_template.instances.name
+    version = "$Latest"
   }
 }
 
