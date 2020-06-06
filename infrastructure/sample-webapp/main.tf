@@ -1,7 +1,4 @@
-provider "aws" {
-  profile = "terraform"
-  region  = "ap-southeast-1"
-}
+provider "aws" {}
 
 module "network" {
     source          = "../modules/network"
