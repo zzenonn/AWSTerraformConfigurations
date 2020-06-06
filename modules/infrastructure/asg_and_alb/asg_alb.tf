@@ -32,7 +32,7 @@ resource "aws_security_group" "elb" {
 }
 
 resource "aws_iam_role" "asg_role" {
-  count       = length(var.iam_policies)
+  count       = length(var.iam_policies) > 0 ? 1 : 0
   name        = "${var.project_name}-${var.environment}-AsgRole"
   path        = "/${var.project_name}/${var.environment}/"
 
@@ -67,9 +67,8 @@ resource "aws_iam_role_policy" "asg_policy" {
 
 resource "aws_iam_instance_profile" "asg_profile" {
   count       = length(var.iam_policies)
-  name        = "${var.project_name}-${var.environment}-Asg-Profile"
   path        = "/${var.project_name}/${var.environment}/"
-  role        = aws_iam_role.asg_role[count.index].name
+  role        = aws_iam_role.asg_role[0].name
 }
 
 resource "aws_security_group" "asg_instances" {
