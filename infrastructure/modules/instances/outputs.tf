@@ -1,11 +1,7 @@
-output "vpc" {
-  value = var.vpc
+output "bastion_id" {
+  value = aws_instance.bastion.id
 }
 
-output "db_subnet_group" {
-  value = var.db_subnet_group
-}
-
-output "db_port" {
-  value = var.db_port
+output "db_endpoint" {
+  value = aws_db_instance.db.endpoint
 }

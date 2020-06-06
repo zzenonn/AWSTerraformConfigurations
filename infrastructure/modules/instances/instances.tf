@@ -116,10 +116,10 @@ resource "aws_instance" "bastion" {
   iam_instance_profile = aws_iam_instance_profile.bastion_profile.name
   security_groups      = [aws_security_group.bastion.id]
   user_data            = <<-EOF
-  #!/bin/bash
-  amazon-linux-extras install postgresql11 vim epel -y
-  yum install -y postgresql-server postgresql-devel
-  EOF
+    #!/bin/bash
+    amazon-linux-extras install postgresql11 vim epel -y
+    yum install -y postgresql-server postgresql-devel
+    EOF
   tags = {
     Name    = "${local.name_tag_prefix}-BastionInstance"
     Env     = var.environment
