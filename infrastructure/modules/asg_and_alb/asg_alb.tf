@@ -104,6 +104,7 @@ resource "aws_launch_template" "instances" {
   network_interfaces {
     associate_public_ip_address = false
     security_groups = [aws_security_group.asg_instances.id]
+    delete_on_termination = true
   }
 
   user_data = base64encode(var.userdata)

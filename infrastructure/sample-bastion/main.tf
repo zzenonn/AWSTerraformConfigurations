@@ -1,4 +1,6 @@
-provider "aws" {}
+provider "aws" {
+  region  = "ap-southeast-1"
+}
 
 module "network" {
     source          = "../modules/network"
