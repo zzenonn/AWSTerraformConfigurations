@@ -32,8 +32,8 @@ resource "aws_security_group" "elb" {
 }
 
 resource "aws_iam_role" "asg_role" {
-  count       = var.iam_policy == "" ? 0 : 1
-  name_prefix = "${var.project_name}${var.environment}"
+  count       = length(var.iam_policies)
+  name        = "${var.project_name}-${var.environment}-AsgRole"
   path        = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
@@ -59,15 +59,15 @@ EOF
 }
 
 resource "aws_iam_role_policy" "asg_policy" {
-  count       = var.iam_policy == "" ? 0 : 1
-  name_prefix = "${var.project_name}${var.environment}"
-  role        = aws_iam_role.asg_role[count.index].id
-  policy      = var.iam_policy
+  for_each    = var.iam_policies
+  name        = "${var.project_name}-${var.environment}-${each.key}-Policy"
+  role        = aws_iam_role.asg_role[0].id
+  policy      = each.value
 }
 
 resource "aws_iam_instance_profile" "asg_profile" {
-  count       = var.iam_policy == "" ? 0 : 1
-  name_prefix = "${var.project_name}${var.environment}"
+  count       = length(var.iam_policies)
+  name        = "${var.project_name}-${var.environment}-Asg-Profile"
   path        = "/${var.project_name}/${var.environment}/"
   role        = aws_iam_role.asg_role[count.index].name
 }
@@ -104,7 +104,7 @@ resource "aws_launch_template" "instances" {
 
 
   iam_instance_profile {
-    name = var.iam_policy == "" ? null : aws_iam_instance_profile.asg_profile[0].name
+    name = length(var.iam_policies) == 0 ? null : aws_iam_instance_profile.asg_profile[0].name
   }
 
   image_id = data.aws_ssm_parameter.base_ami.value

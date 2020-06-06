@@ -20,7 +20,6 @@ module "webapp" {
     public_subnets      = module.network.public_subnets
     base_ami            = "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
     target_group_arns   = [aws_lb_target_group.app.arn]
-    iam_policies        = local.ssm_policy
     userdata        = <<-EOF
         #!/bin/bash
         # Install Apache Web Server and PHP

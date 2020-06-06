@@ -54,33 +54,9 @@ variable "target_group_arns" {
   description = "Target group the ASG will automatically add to"
 }
 
-variable "iam_policy" {
-  type        = string
-  default     = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ssm:UpdateInstanceInformation",
-                "ssmmessages:CreateControlChannel",
-                "ssmmessages:CreateDataChannel",
-                "ssmmessages:OpenControlChannel",
-                "ssmmessages:OpenDataChannel"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetEncryptionConfiguration"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-  EOF
+variable "iam_policies" {
+  type        = map
+  default     = {}
   description = "IAM Policy to associate with ASG instances. Defaults to required SSM policy. Use \"\" for no policy."
 }
 
@@ -95,4 +71,5 @@ locals {
   num_pub_subnet    = length(var.public_subnets)
   num_azs           = length(data.aws_availability_zones.azs.zone_ids)
   elb_subnets       = local.num_pub_subnet > local.num_azs ? slice(var.public_subnets, 0, local.num_azs) : var.public_subnets
+  
 }
