@@ -50,7 +50,7 @@ locals {
   total_subnets     = var.networks.public_subnets + var.networks.private_subnets + var.networks.db_subnets 
   name_tag_prefix   = "${var.project_name}-${var.environment}"
   ssm_policy        = {
-    "ssm_policy"    = <<-EOF
+    "SSMPolicy"    = <<-EOF
 {
     "Version": "2012-10-17",
     "Statement": [
