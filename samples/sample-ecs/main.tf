@@ -18,17 +18,12 @@ module "webapp" {
     vpc                 = module.network.vpc
     private_subnets     = module.network.private_subnets
     public_subnets      = module.network.public_subnets
-    base_ami            = "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
-    target_group_arns   = [aws_lb_target_group.app.arn]
-    userdata        = <<-EOF
+    base_ami            = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+    iam_policies        = local.instance_policies
+    userdata            = <<-EOF
         #!/bin/bash
-        # Install Apache Web Server and PHP
-        yum install -y httpd mysql php
-        # Download Lab files
-        wget https://us-west-2-tcprod.s3.amazonaws.com/courses/ILT-TF-100-TECESS/v4.6.8/lab-1-build-a-web-server/scripts/lab-app.zip
-        unzip lab-app.zip -d /var/www/html/
-        # Turn on web server
-        chkconfig httpd on
-        service httpd start
+        echo ECS_CLUSTER=${local.ecs_cluster_name}-EcsCluster >> /etc/ecs/ecs.config
+        yum install -y iptables-services; sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP
+        iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables
     EOF
 }
