@@ -310,16 +310,6 @@ resource "aws_codebuild_project" "service" {
       name  = "SERVICE"
       value = lower(var.service)
     }
-    
-    environment_variable {
-      name  = "EXECUTION_ID"
-      value = "#{codepipeline.PipelineExecutionId}"
-    }
-    
-    environment_variable {
-      name  = "COMMIT_ID"
-      value = "#{SourceVariables.CommitId}"
-    }
   }
 
   source {
@@ -375,7 +365,18 @@ resource "aws_codepipeline" "codepipeline" {
       version          = "1"
 
       configuration = {
-        ProjectName = aws_codebuild_project.service.name
+        EnvironmentVariables = <<-EOF
+[{
+	"name": "EXECUTION_ID",
+	"value": "#{codepipeline.PipelineExecutionId}",
+	"type": "PLAINTEXT"
+}, {
+	"name": "COMMIT_ID",
+	"value": "#{SourceVariables.CommitId}",
+	"type": "PLAINTEXT"
+}]
+EOF
+        ProjectName   = aws_codebuild_project.service.name
       }
     }
   }
