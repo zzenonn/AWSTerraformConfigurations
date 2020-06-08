@@ -44,7 +44,7 @@ resource "aws_ecs_service" "services" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.green[each.key].arn
-    container_name   = each.key
+    container_name   = lower(each.key)
     container_port   = 80
   }
 
