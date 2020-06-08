@@ -37,6 +37,8 @@ module "cicdCat" {
     project_name                    = module.network.project_name
     environment                     = module.network.environment
     service                         = "Cat"
+    git_repo                        = "zzenonn"
+    git_owner                       = "catdog-catservice"
     codedeploy_app                  = aws_codedeploy_app.services.name
     codedeploy_deployment_group     = aws_codedeploy_deployment_group.services["Cat"].deployment_group_name
 }
@@ -46,6 +48,8 @@ module "cicdDog" {
     project_name                    = module.network.project_name
     environment                     = module.network.environment
     service                         = "Dog"
+    git_repo                        = "zzenonn"
+    git_owner                       = "catdog-dogservice"
     codedeploy_app                  = aws_codedeploy_app.services.name
     codedeploy_deployment_group     = aws_codedeploy_deployment_group.services["Dog"].deployment_group_name
 }
@@ -55,6 +59,8 @@ module "cicdHome" {
     project_name                    = module.network.project_name
     environment                     = module.network.environment
     service                         = "Home"
+    git_repo                        = "zzenonn"
+    git_owner                       = "catdog-homepage"
     codedeploy_app                  = aws_codedeploy_app.services.name
     codedeploy_deployment_group     = aws_codedeploy_deployment_group.services["Home"].deployment_group_name
 }

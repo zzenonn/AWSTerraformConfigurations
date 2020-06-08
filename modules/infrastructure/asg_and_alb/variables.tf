@@ -42,6 +42,12 @@ variable "elb_port" {
   description = "Inbound port for the ELB"
 }
 
+variable "test_port" {
+  type        = number
+  default     = 80
+  description = "Inbound port for the ELB for testing"
+}
+
 variable "alb_healthcheck" {
   type        = string
   default     = "EC2"

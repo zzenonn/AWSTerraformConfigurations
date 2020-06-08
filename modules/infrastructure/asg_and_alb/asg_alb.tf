@@ -15,6 +15,14 @@ resource "aws_security_group" "elb" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow from anywhere to the app port ${var.elb_port} on this ELB"
   }
+  # Test app port
+  ingress {
+    from_port   = var.test_port
+    to_port     = var.test_port
+    protocol    = 6
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow from anywhere to the app port ${var.elb_port} on this ELB"
+  }
   
   egress {
     from_port        = 0

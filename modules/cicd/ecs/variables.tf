@@ -16,6 +16,18 @@ variable "service" {
   description = "Environment name for tagging purposes"
 }
 
+variable "git_repo" {
+  type        = string
+  default     = "Dev"
+  description = "Repo in GitHub for the code"
+}
+
+variable "git_owner" {
+  type        = string
+  default     = "Dev"
+  description = "EOwner of the GitHub Repo"
+}
+
 variable "codebuild_compute" {
   type        = string
   default     = "BUILD_GENERAL1_SMALL"
@@ -40,6 +52,15 @@ variable "codedeploy_deployment_group" {
   description = "Codedeploy deployment group for this deployment"
 }
 
+variable "github_token_parameter" {
+  type        = string
+  default     = "/personal/GitHubToken"
+  description = "Parameter name for github token as seen on parameter store"
+}
+
+data "aws_ssm_parameter" "github_token" {
+  name = var.github_token_parameter
+}
 
 locals {
   name_tag_prefix   = "${var.project_name}-${var.environment}-${var.service}"

@@ -175,7 +175,7 @@ resource "aws_iam_role_policy" "codebuild" {
 EOF
 }
 
-resource "aws_codebuild_project" "example" {
+resource "aws_codebuild_project" "service" {
   name          = local.name_tag_prefix
   description   = "Build for ${var.service} service"
   build_timeout = "30"
@@ -214,5 +214,78 @@ resource "aws_codebuild_project" "example" {
     Env     = var.environment
     Project = var.project_name
     Service = var.service
+  }
+}
+
+resource "aws_codepipeline" "codepipeline" {
+  name     = "tf-test-pipeline"
+  role_arn = aws_iam_role.codepipeline.arn
+
+  artifact_store {
+    location = aws_s3_bucket.artifact_store.bucket
+    type     = "S3"
+  }
+
+  stage {
+    name = "Source"
+
+    action {
+      name             = "Source"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = "1"
+      output_artifacts = ["source_output"]
+
+      configuration = {
+        Owner      = var.git_owner
+        Repo       = var.git_repo
+        Branch     = var.environment
+        OAuthToken = data.aws_ssm_parameter.github_token.value
+      }
+    }
+  }
+
+  stage {
+    name = "Build"
+
+    action {
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_output"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.service.name
+      }
+    }
+  }
+
+  stage {
+    name = "Deploy"
+
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "Amazon ECS (Blue/Green)"
+      input_artifacts = ["build_output"]
+      version         = "1"
+
+      configuration = {
+        ApplicationName                = var.codedeploy_app
+        DeploymentGroupName            = var.codedeploy_deployment_group
+        TaskDefinitionTemplateArtifact = "build_output"
+        TaskDefinitionTemplatePath     = "taskdef.json"
+        AppSpecTemplateArtifact        = "build_output"
+        AppSpecTemplatePath            = "appspec.yaml"
+        Image1ArtifactName             = "build_output"
+        Image1ContainerName            = " IMAGE1_NAME"
+        
+      }
+    }
   }
 }
