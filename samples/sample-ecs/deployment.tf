@@ -71,7 +71,7 @@ resource "aws_codedeploy_deployment_group" "services" {
   load_balancer_info {
     target_group_pair_info {
       prod_traffic_route {
-        listener_arns = [aws_lb_listener.app.arn]
+        listener_arns = [aws_lb_listener.green_app.arn]
       }
       
       test_traffic_route {

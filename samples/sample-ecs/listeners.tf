@@ -32,7 +32,7 @@ resource "aws_lb_target_group" "green" {
     }
 }
 
-resource "aws_lb_listener" "app" {
+resource "aws_lb_listener" "green_app" {
   load_balancer_arn = module.webapp.load_balancer_arn
   port              = "80"
   protocol          = "HTTP"
@@ -50,7 +50,7 @@ resource "aws_lb_listener" "app" {
 
 resource "aws_lb_listener_rule" "service" {
   for_each     = local.services
-  listener_arn = aws_lb_listener.app.arn
+  listener_arn = aws_lb_listener.green_app.arn
 
   action {
     type             = "forward"
