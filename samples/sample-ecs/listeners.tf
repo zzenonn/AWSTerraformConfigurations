@@ -83,7 +83,7 @@ resource "aws_lb_listener" "blue_app" {
 
 resource "aws_lb_listener_rule" "blue_service" {
   for_each     = local.services
-  listener_arn = aws_lb_listener.app.arn
+  listener_arn = aws_lb_listener.blue_app.arn
 
   action {
     type             = "forward"
