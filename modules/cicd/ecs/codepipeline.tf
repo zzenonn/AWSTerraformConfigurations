@@ -268,6 +268,7 @@ resource "aws_iam_role_policy" "codebuild" {
               "ecr:GetAuthorizationToken",
               "ecr:InitiateLayerUpload",
               "ecr:PutImage",
+              "ecr:DescribeRepositories"
               "ecr:UploadLayerPart"
             ],
             "Resource": "*",
