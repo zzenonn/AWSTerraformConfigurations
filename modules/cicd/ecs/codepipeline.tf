@@ -165,7 +165,7 @@ resource "aws_iam_role_policy" "codebuild" {
             "codebuild:BatchGetBuilds"
           ],
           "Resource": [
-            "${aws_s3_bucket.aws_codebuild_project.service.arn}"
+            "${aws_codebuild_project.service.arn}"
           ]
         },
         {
