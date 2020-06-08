@@ -44,7 +44,7 @@ variable "elb_port" {
 
 variable "test_port" {
   type        = number
-  default     = 80
+  default     = 8080
   description = "Inbound port for the ELB for testing"
 }
 
