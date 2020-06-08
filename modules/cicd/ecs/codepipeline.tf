@@ -60,7 +60,7 @@ resource "aws_iam_role_policy" "codepipeline" {
             ],
             "Resource": "*",
             "Effect": "Allow"
-        }
+        },
         {
           "Effect":"Allow",
           "Action": [
@@ -73,7 +73,7 @@ resource "aws_iam_role_policy" "codepipeline" {
             "${aws_s3_bucket.artifact_store.arn}",
             "${aws_s3_bucket.artifact_store.arn}/*"
           ]
-        }
+        },
         {
             "Action": [
               "ecr:BatchCheckLayerAvailability",
@@ -144,7 +144,7 @@ resource "aws_iam_role_policy" "codebuild" {
             ],
             "Resource": "*",
             "Effect": "Allow"
-        }
+        },
         {
           "Effect":"Allow",
           "Action": [
@@ -157,7 +157,7 @@ resource "aws_iam_role_policy" "codebuild" {
             "${aws_s3_bucket.artifact_store.arn}",
             "${aws_s3_bucket.artifact_store.arn}/*"
           ]
-        }        
+        },     
         {
             "Action": [
               "ecr:BatchCheckLayerAvailability",
