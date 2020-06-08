@@ -5,13 +5,13 @@ resource "aws_ecs_task_definition" "services" {
   for_each                 = data.aws_ecr_repository.services
   cpu                      = 128
   memory                   = 128
-  family                   = "${local.name_tag_prefix}-${each.key}"
+  family                   = lower("${local.name_tag_prefix}-${each.key}")
   requires_compatibilities = ["EC2"]
   
   container_definitions = <<-EOF
 [
   {
-    "name": lower(each.key),
+    "name": each.key,
     "image": "${each.value.repository_url}",
     "essential": true,
     "portMappings": [
@@ -44,7 +44,7 @@ resource "aws_ecs_service" "services" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.green[each.key].arn
-    container_name   = "${local.name_tag_prefix}-${each.key}"
+    container_name   = each.key
     container_port   = 80
   }
 
