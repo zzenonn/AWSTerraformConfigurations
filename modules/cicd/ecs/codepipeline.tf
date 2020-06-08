@@ -293,6 +293,7 @@ resource "aws_codebuild_project" "service" {
     compute_type                = var.codebuild_compute
     image                       = var.codebuild_image
     type                        = "LINUX_CONTAINER"
+    privileged_mode             = true
     image_pull_credentials_type = "CODEBUILD"
 
     environment_variable {
