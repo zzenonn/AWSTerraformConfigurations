@@ -11,7 +11,7 @@ resource "aws_ecs_task_definition" "services" {
   container_definitions = <<-EOF
 [
   {
-    "name": "${local.name_tag_prefix}-${each.key}",
+    "name": lower(each.key),
     "image": "${each.value.repository_url}",
     "essential": true,
     "portMappings": [
