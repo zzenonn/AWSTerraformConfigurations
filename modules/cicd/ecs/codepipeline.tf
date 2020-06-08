@@ -159,6 +159,16 @@ resource "aws_iam_role_policy" "codebuild" {
           ]
         },     
         {
+          "Effect":"Allow",
+          "Action": [
+            "codebuild:StartBuild",
+            "codebuild:BatchGetBuilds"
+          ],
+          "Resource": [
+            "${aws_s3_bucket.aws_codebuild_project.service.arn}"
+          ]
+        },
+        {
             "Action": [
               "ecr:BatchCheckLayerAvailability",
               "ecr:CompleteLayerUpload",
@@ -169,7 +179,7 @@ resource "aws_iam_role_policy" "codebuild" {
             ],
             "Resource": "*",
             "Effect": "Allow"
-      }
+        }
     ]
 }
 EOF
