@@ -310,6 +310,16 @@ resource "aws_codebuild_project" "service" {
       name  = "SERVICE"
       value = lower(var.service)
     }
+    
+    environment_variable {
+      name  = "EXECUTION_ID"
+      value = "#{codepipeline.PipelineExecutionId}"
+    }
+    
+    environment_variable {
+      name  = "COMMIT_ID"
+      value = "#{SourceVariables.CommitId}"
+    }
   }
 
   source {
@@ -340,6 +350,7 @@ resource "aws_codepipeline" "codepipeline" {
       owner            = "ThirdParty"
       provider         = "GitHub"
       version          = "1"
+      namespace        = "SourceVariables"
       output_artifacts = ["source_output"]
 
       configuration = {
