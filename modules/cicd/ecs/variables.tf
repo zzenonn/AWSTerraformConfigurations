@@ -10,16 +10,22 @@ variable "environment" {
   description = "Environment name for tagging purposes"
 }
 
-variable "code_build_iam_policies" {
-  type        = map
-  default     = {}
-  description = "IAM Policy to associate with code build instances. Defaults to allow access to ECR"
+variable "service" {
+  type        = string
+  default     = "Dev"
+  description = "Environment name for tagging purposes"
 }
 
-variable "pipeline_iam_policies" {
-  type        = map
-  default     = {}
-  description = "IAM Policy to associate with code pipeline instances. Defaults to codepipeline service role"
+variable "codebuild_compute" {
+  type        = string
+  default     = "BUILD_GENERAL1_SMALL"
+  description = "Sompute to use with codebuild"
+}
+
+variable "codebuild_image" {
+  type        = string
+  default     = "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+  description = "Image to use with codebuild"
 }
 
 variable "codedeploy_app" {
@@ -36,115 +42,7 @@ variable "codedeploy_deployment_group" {
 
 
 locals {
-  name_tag_prefix   = "${var.project_name}-${var.environment}"
-  code_build_iam_policy = {
-  "CodeBuildDefault" = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "ssm:GetParametersByPath",
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-                "serverlessrepo:*"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        }
-        {
-          "Effect":"Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:GetObjectVersion",
-            "s3:GetBucketVersioning",
-            "s3:PutObject"
-          ],
-          "Resource": [
-            "${aws_s3_bucket.artifact_store.arn}",
-            "${aws_s3_bucket.artifact_store.arn}/*"
-          ]
-        }        
-        {
-            "Action": [
-              "ecr:BatchCheckLayerAvailability",
-              "ecr:CompleteLayerUpload",
-              "ecr:GetAuthorizationToken",
-              "ecr:InitiateLayerUpload",
-              "ecr:PutImage",
-              "ecr:UploadLayerPart"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-      }
-    ]
-}
-EOF
-    
-  }
-  code_pipeline_iam_policy = {
-  
-  "CodePipelineDefault" = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "ssm:GetParametersByPath",
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-                "serverlessrepo:*"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        }
-        {
-          "Effect":"Allow",
-          "Action": [
-            "s3:GetObject",
-            "s3:GetObjectVersion",
-            "s3:GetBucketVersioning",
-            "s3:PutObject"
-          ],
-          "Resource": [
-            "${aws_s3_bucket.artifact_store.arn}",
-            "${aws_s3_bucket.artifact_store.arn}/*"
-          ]
-        }
-        {
-            "Action": [
-              "ecr:BatchCheckLayerAvailability",
-              "ecr:CompleteLayerUpload",
-              "ecr:GetAuthorizationToken",
-              "ecr:InitiateLayerUpload",
-              "ecr:PutImage",
-              "ecr:UploadLayerPart"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-      }
-    ]
-}
-EOF
-}
+  name_tag_prefix   = "${var.project_name}-${var.environment}-${var.service}"
 
   
 }
