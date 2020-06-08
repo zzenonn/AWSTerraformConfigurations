@@ -47,7 +47,6 @@ variable "networks" {
 
 
 locals {
-  ecs_cluster_name  = "${var.project_name}-${var.environment}-CatDogCluster"
   name_tag_prefix   = "${var.project_name}-${var.environment}"
   services          = {
     "Home"  = ""
@@ -110,5 +109,15 @@ locals {
 }
   EOF
   }
+  
 }
 
+# Looks for existing repositories
+data "aws_ecr_repository" "services" {
+  for_each = local.services
+  name     = lower("${var.project_name}/${each.key}")
+}
+
+data "aws_iam_policy" "codedeploy_ecs" {
+  arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
+}

@@ -22,7 +22,7 @@ module "webapp" {
     iam_policies        = local.instance_policies
     userdata            = <<-EOF
         #!/bin/bash
-        echo ECS_CLUSTER=${local.ecs_cluster_name}-EcsCluster >> /etc/ecs/ecs.config
+        echo "ECS_CLUSTER=${local.name_tag_prefix}-EcsCluster" >> /etc/ecs/ecs.config
         yum install -y iptables-services; sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP
         iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables
     EOF
