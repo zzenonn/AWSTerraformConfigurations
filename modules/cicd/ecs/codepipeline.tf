@@ -192,17 +192,17 @@ resource "aws_codebuild_project" "service" {
     image_pull_credentials_type = "CODEBUILD"
 
     environment_variable {
-      name  = "ProjectName"
+      name  = "projectname"
       value = lower(var.project_name)
     }
 
     environment_variable {
-      name  = "Environment"
+      name  = "environment"
       value = lower(var.environment)
     }
     
     environment_variable {
-      name  = "Service"
+      name  = "service"
       value = lower(var.service)
     }
   }
