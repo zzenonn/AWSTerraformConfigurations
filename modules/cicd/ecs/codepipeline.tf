@@ -271,7 +271,7 @@ resource "aws_codepipeline" "codepipeline" {
       name            = "Deploy"
       category        = "Deploy"
       owner           = "AWS"
-      provider        = "Amazon ECS (Blue/Green)"
+      provider        = "CodeDeployToECS"
       input_artifacts = ["build_output"]
       version         = "1"
 
