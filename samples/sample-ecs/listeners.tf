@@ -50,7 +50,7 @@ resource "aws_lb_listener" "green_app" {
   }
 }
 
-resource "aws_lb_listener_rule" "service" {
+resource "aws_lb_listener_rule" "green_service" {
   for_each     = local.services
   listener_arn = aws_lb_listener.green_app.arn
 
@@ -61,7 +61,7 @@ resource "aws_lb_listener_rule" "service" {
   
   condition {
     path_pattern {
-      values = ["/${local.services[each.key]}"]
+      values = ["/${local.services[each.key]}/*"]
     }
   }
 }
