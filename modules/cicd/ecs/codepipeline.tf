@@ -5,7 +5,8 @@ deployment
 
 resource "aws_s3_bucket" "artifact_store" {
   bucket_prefix = lower(local.name_tag_prefix)
-  acl    = "private"
+  acl           = "private"
+  force_destroy = true
 }
 
 resource "aws_iam_role" "codepipeline" {

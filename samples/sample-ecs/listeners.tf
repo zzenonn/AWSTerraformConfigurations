@@ -3,6 +3,7 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_lb_target_group" "blue" {
+  depends_on = [aws_lb_listener.blue_app]
   for_each = local.services  
   name     = "${local.name_tag_prefix}-Blue-${each.key}-Tg"
   port     = 80
@@ -18,6 +19,7 @@ resource "aws_lb_target_group" "blue" {
 }
 
 resource "aws_lb_target_group" "green" {
+  depends_on = [aws_lb_listener.green_app]
   for_each = local.services
   name     = "${local.name_tag_prefix}-Green-${each.key}-Tg"
   port     = 80

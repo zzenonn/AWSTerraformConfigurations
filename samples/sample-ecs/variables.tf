@@ -50,8 +50,8 @@ locals {
   name_tag_prefix   = "${var.project_name}-${var.environment}"
   services          = {
     "Home"  = ""
-    "Cat"   = "cat"
-    "Dog"   = "dog"
+    "Cat"   = "cats"
+    "Dog"   = "dogs"
     
   }
   instance_policies = {
