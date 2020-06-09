@@ -94,7 +94,7 @@ resource "aws_lb_listener_rule" "blue_service" {
   
   condition {
     path_pattern {
-      values = ["/${local.services[each.key]}"]
+      values = ["/${local.services[each.key]}/*"]
     }
   }
 }
