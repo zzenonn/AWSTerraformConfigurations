@@ -49,9 +49,9 @@ variable "networks" {
 locals {
   name_tag_prefix   = "${var.project_name}-${var.environment}"
   services          = {
-    "Home"  = ""
-    "Cat"   = "cats"
-    "Dog"   = "dogs"
+    "Home"  = ["/", "/img*"]
+    "Cat"   = ["/cats*"]
+    "Dog"   = ["/dogs*"]
     
   }
   instance_policies = {
