@@ -1,6 +1,6 @@
 
 # While all services here will have the exact same configuration, the CICD will 
-# overwrite this with 
+# overwrite this with the repos task definition
 resource "aws_ecs_task_definition" "services" {
   for_each                 = data.aws_ecr_repository.services
   cpu                      = 128

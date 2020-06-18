@@ -112,10 +112,28 @@ locals {
   
 }
 
+#resource "null_resource" "create_repos`" {
+#  provisioner "local-exec" {
+#    command = <<-EOF
+#    aws ecr create-repository --repository-name catdog/cat --image-tag-mutability "IMMUTABLE" --image-scanning-configuration scanOnPush=true
+#    aws ecr create-repository --repository-name catdog/dog --image-tag-mutability "IMMUTABLE" --image-scanning-configuration scanOnPush=true
+#    aws ecr create-repository --repository-name catdog/home --image-tag-mutability "IMMUTABLE" --image-scanning-configuration scanOnPush=true
+#EOF
+#  provisioner "local-exec" {
+#    when    = "destroy"
+#    command = <<-EOF
+#    aws ecr delete-repository --repository-name catdog/cat
+#    aws ecr delete-repository --repository-name catdog/dog 
+#    aws ecr delete-repository --repository-name catdog/home
+#EOF
+#  }
+#}
+
 # Looks for existing repositories
 data "aws_ecr_repository" "services" {
-  for_each = local.services
-  name     = lower("${var.project_name}/${each.key}")
+#  depends_on = [null_resource.create_repos]
+  for_each   = local.services
+  name       = lower("${var.project_name}/${each.key}")
 }
 
 data "aws_iam_policy" "codedeploy_ecs" {
