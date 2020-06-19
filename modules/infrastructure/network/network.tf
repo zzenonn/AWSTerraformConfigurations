@@ -296,7 +296,7 @@ resource "aws_network_acl" "db" {
 resource "aws_network_acl_rule" "db_in" {
   count          = length(aws_subnet.private)
   network_acl_id = aws_network_acl.db.id
-  rule_number    = count.index + 1 * 100
+  rule_number    = (count.index + 1) * 100
   egress         = false
   protocol       = 6
   rule_action    = "allow"
@@ -309,7 +309,7 @@ resource "aws_network_acl_rule" "db_in" {
 resource "aws_network_acl_rule" "db_out" {
   count          = length(aws_subnet.private)
   network_acl_id = aws_network_acl.db.id
-  rule_number    = count.index + 1 * 100
+  rule_number    = (count.index + 1) * 100
   egress         = true
   protocol       = 6
   rule_action    = "allow"
