@@ -28,39 +28,14 @@ module "webapp" {
     EOF
 }
 
-# What follows is a hard coded list of pipelines. When 0.13 is released
-# and for_each for modules stabilizes, this should be changed to refer 
-# to the services map.
-
-module "cicdCat" {
+module "cicd" {
+    for_each                        = local.services
     source                          = "../../modules/cicd/ecs"
     project_name                    = module.network.project_name
     environment                     = module.network.environment
-    service                         = "Cat"
+    service                         = each.key
     git_owner                       = "zzenonn"
-    git_repo                        = "catdog-catservice"
+    git_repo                        = lower("${var.project_name}-${each.key}service")
     codedeploy_app                  = aws_codedeploy_app.services.name
-    codedeploy_deployment_group     = aws_codedeploy_deployment_group.services["Cat"].deployment_group_name
-}
-
-module "cicdDog" {
-    source                          = "../../modules/cicd/ecs"
-    project_name                    = module.network.project_name
-    environment                     = module.network.environment
-    service                         = "Dog"
-    git_owner                       = "zzenonn"
-    git_repo                        = "catdog-dogservice"
-    codedeploy_app                  = aws_codedeploy_app.services.name
-    codedeploy_deployment_group     = aws_codedeploy_deployment_group.services["Dog"].deployment_group_name
-}
-
-module "cicdHome" {
-    source                          = "../../modules/cicd/ecs"
-    project_name                    = module.network.project_name
-    environment                     = module.network.environment
-    service                         = "Home"
-    git_owner                       = "zzenonn"
-    git_repo                        = "catdog-homepage"
-    codedeploy_app                  = aws_codedeploy_app.services.name
-    codedeploy_deployment_group     = aws_codedeploy_deployment_group.services["Home"].deployment_group_name
+    codedeploy_deployment_group     = aws_codedeploy_deployment_group.services[each.key].deployment_group_name
 }
