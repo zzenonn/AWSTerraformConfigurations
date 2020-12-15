@@ -311,6 +311,17 @@ resource "aws_codebuild_project" "service" {
       name  = "SERVICE"
       value = lower(var.service)
     }
+    
+    dynamic "environment_variable" {
+      for_each = var.codebuild_environment_vars
+      
+      content {
+        name  = environment_variable.key
+        value = environment_variable.value
+      }
+    }
+    
+    
   }
 
   source {

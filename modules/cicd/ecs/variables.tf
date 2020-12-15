@@ -58,6 +58,12 @@ variable "github_token_parameter" {
   description = "Parameter name for github token as seen on parameter store"
 }
 
+variable "codebuild_environment_vars" {
+  type        = map
+  default     = {}
+  description = "Parameter name for github token as seen on parameter store"
+}
+
 data "aws_ssm_parameter" "github_token" {
   name = var.github_token_parameter
 }
