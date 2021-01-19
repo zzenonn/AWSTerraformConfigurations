@@ -16,6 +16,12 @@ variable "db_port" {
   description = "Port of the database being used"
 }
 
+variable "codestar_connection_arn" {
+  type        = string
+  default     = ""
+  description = "ARN of Codestar connection"
+}
+
 # NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS
 variable "networks" {
   type = object({

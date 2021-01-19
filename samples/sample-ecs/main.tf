@@ -3,6 +3,11 @@ provider "aws" {
   region  = "ap-southeast-1"
 }
 
+# resource "aws_codestarconnections_connection" "scm" {
+#   name          = "scm-connection"
+#   provider_type = "GitHub"
+# }
+
 module "network" {
     source          = "../../modules/infrastructure/network"
     project_name    = var.project_name
@@ -36,6 +41,7 @@ module "cicd" {
     service                         = each.key
     git_owner                       = "zzenonn"
     git_repo                        = lower("${var.project_name}-${each.key}service")
+    codestar_connection_arn         = var.codestar_connection_arn
     codedeploy_app                  = aws_codedeploy_app.services.name
     codedeploy_deployment_group     = aws_codedeploy_deployment_group.services[each.key].deployment_group_name
 }

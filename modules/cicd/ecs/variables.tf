@@ -25,7 +25,7 @@ variable "git_repo" {
 variable "git_owner" {
   type        = string
   default     = "Dev"
-  description = "EOwner of the GitHub Repo"
+  description = "Owner of the GitHub Repo"
 }
 
 variable "codebuild_compute" {
@@ -52,6 +52,12 @@ variable "codedeploy_deployment_group" {
   description = "Codedeploy deployment group for this deployment"
 }
 
+variable "codestar_connection_arn" {
+  type        = string
+  default     = ""
+  description = "ARN of Codestar connection"
+}
+
 variable "github_token_parameter" {
   type        = string
   default     = "/personal/GitHubToken"
@@ -61,7 +67,7 @@ variable "github_token_parameter" {
 variable "codebuild_environment_vars" {
   type        = map
   default     = {}
-  description = "Parameter name for github token as seen on parameter store"
+  description = "Environment variables for codebuild"
 }
 
 data "aws_ssm_parameter" "github_token" {
