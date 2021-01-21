@@ -65,7 +65,7 @@ variable "github_token_parameter" {
 }
 
 variable "codebuild_environment_vars" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Environment variables for codebuild"
 }
@@ -75,7 +75,7 @@ data "aws_ssm_parameter" "github_token" {
 }
 
 locals {
-  name_tag_prefix   = "${var.project_name}-${var.environment}-${var.service}"
+  name_tag_prefix = "${var.project_name}-${var.environment}-${var.service}"
 
-  
+
 }

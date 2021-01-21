@@ -21,17 +21,17 @@ variable "vpc" {
 }
 
 variable "private_subnets" {
-  type        = list
+  type        = list(any)
   description = "Comes from networking template"
 }
 
 variable "public_subnets" {
-  type        = list
+  type        = list(any)
   description = "Comes from networking template"
 }
 
 variable "db_subnets" {
-  type        = list
+  type        = list(any)
   description = "Comes from networking template"
 }
 
@@ -61,5 +61,5 @@ data "aws_ssm_parameter" "db_password" {
 }
 
 locals {
-  name_tag_prefix   = "${var.project_name}-${var.environment}"
+  name_tag_prefix = "${var.project_name}-${var.environment}"
 }

@@ -30,9 +30,9 @@ resource "aws_iam_role_policy_attachment" "codedeploy" {
 }
 
 resource "aws_codedeploy_app" "services" {
-  depends_on        = [aws_iam_role_policy_attachment.codedeploy]
-  name              = "${local.name_tag_prefix}-Apps"
-  compute_platform  = "ECS"
+  depends_on       = [aws_iam_role_policy_attachment.codedeploy]
+  name             = "${local.name_tag_prefix}-Apps"
+  compute_platform = "ECS"
 }
 
 resource "aws_codedeploy_deployment_group" "services" {
@@ -73,7 +73,7 @@ resource "aws_codedeploy_deployment_group" "services" {
       prod_traffic_route {
         listener_arns = [aws_lb_listener.green_app.arn]
       }
-      
+
       test_traffic_route {
         listener_arns = [aws_lb_listener.blue_app.arn]
       }

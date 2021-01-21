@@ -125,13 +125,13 @@ resource "aws_instance" "bastion" {
     Env     = var.environment
     Project = var.project_name
   }
-} 
+}
 
 
 resource "aws_db_instance" "db" {
-  allocated_storage       = var.environment == "Prod" ? 100  : 20
-  max_allocated_storage   = var.environment == "Prod" ? 500  : 30
-  backup_retention_period = var.environment == "Prod" ? 30  : 3
+  allocated_storage       = var.environment == "Prod" ? 100 : 20
+  max_allocated_storage   = var.environment == "Prod" ? 500 : 30
+  backup_retention_period = var.environment == "Prod" ? 30 : 3
   storage_type            = var.environment == "Prod" ? "io1" : "gp2"
   iops                    = var.environment == "Prod" ? 10000 : 0
   instance_class          = var.environment == "Prod" ? "db.t3.large" : "db.t3.micro"
@@ -145,5 +145,5 @@ resource "aws_db_instance" "db" {
   db_subnet_group_name    = var.db_subnet_group
   vpc_security_group_ids  = [aws_security_group.db.id]
   storage_encrypted       = true
-  
+
 }

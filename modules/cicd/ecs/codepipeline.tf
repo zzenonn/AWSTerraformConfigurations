@@ -306,26 +306,26 @@ resource "aws_codebuild_project" "service" {
       name  = "ENVIRONMENT"
       value = lower(var.environment)
     }
-    
+
     environment_variable {
       name  = "SERVICE"
       value = lower(var.service)
     }
-    
+
     dynamic "environment_variable" {
       for_each = var.codebuild_environment_vars
-      
+
       content {
         name  = environment_variable.key
         value = environment_variable.value
       }
     }
-    
-    
+
+
   }
 
   source {
-    type        = "CODEPIPELINE"
+    type = "CODEPIPELINE"
   }
   tags = {
     Env     = var.environment
@@ -387,7 +387,7 @@ resource "aws_codepipeline" "codepipeline" {
 	"type": "PLAINTEXT"
 }]
 EOF
-        ProjectName   = aws_codebuild_project.service.name
+        ProjectName          = aws_codebuild_project.service.name
       }
     }
   }
@@ -412,7 +412,7 @@ EOF
         AppSpecTemplatePath            = "appspec.yaml"
         Image1ArtifactName             = "build_output"
         Image1ContainerName            = "IMAGE1_NAME"
-        
+
       }
     }
   }

@@ -23,13 +23,13 @@ resource "aws_security_group" "elb" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow from anywhere to the app port ${var.elb_port} on this ELB"
   }
-  
+
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = -1
-    cidr_blocks      = ["0.0.0.0/0"]
-    description      = "Allow to everywhere from ELB"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow to everywhere from ELB"
   }
 
   tags = {
@@ -40,9 +40,9 @@ resource "aws_security_group" "elb" {
 }
 
 resource "aws_iam_role" "asg_role" {
-  count       = length(var.iam_policies) > 0 ? 1 : 0
-  name        = "${var.project_name}-${var.environment}-AsgRole"
-  path        = "/${var.project_name}/${var.environment}/"
+  count = length(var.iam_policies) > 0 ? 1 : 0
+  name  = "${var.project_name}-${var.environment}-AsgRole"
+  path  = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
 {
@@ -67,16 +67,16 @@ EOF
 }
 
 resource "aws_iam_role_policy" "asg_policy" {
-  for_each    = var.iam_policies
-  name        = "${var.project_name}-${var.environment}-${each.key}-Policy"
-  role        = aws_iam_role.asg_role[0].id
-  policy      = each.value
+  for_each = var.iam_policies
+  name     = "${var.project_name}-${var.environment}-${each.key}-Policy"
+  role     = aws_iam_role.asg_role[0].id
+  policy   = each.value
 }
 
 resource "aws_iam_instance_profile" "asg_profile" {
-  count       = length(var.iam_policies)
-  path        = "/${var.project_name}/${var.environment}/"
-  role        = aws_iam_role.asg_role[0].name
+  count = length(var.iam_policies)
+  path  = "/${var.project_name}/${var.environment}/"
+  role  = aws_iam_role.asg_role[0].name
 }
 
 resource "aws_security_group" "asg_instances" {
@@ -85,18 +85,18 @@ resource "aws_security_group" "asg_instances" {
   vpc_id      = var.vpc
 
   ingress {
-    from_port        = 0
-    to_port          = 65535
-    protocol         = 6
-    security_groups  = [aws_security_group.elb.id]
-    description      = "Allow from ELB to this instance"
+    from_port       = 0
+    to_port         = 65535
+    protocol        = 6
+    security_groups = [aws_security_group.elb.id]
+    description     = "Allow from ELB to this instance"
   }
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = -1
-    cidr_blocks      = ["0.0.0.0/0"]
-    description      = "Allow to everywhere"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow to everywhere"
   }
 
   tags = {
@@ -125,8 +125,8 @@ resource "aws_launch_template" "instances" {
 
   network_interfaces {
     associate_public_ip_address = false
-    security_groups = [aws_security_group.asg_instances.id]
-    delete_on_termination = true
+    security_groups             = [aws_security_group.asg_instances.id]
+    delete_on_termination       = true
   }
 
   user_data = base64encode(var.userdata)
@@ -149,8 +149,8 @@ resource "aws_autoscaling_group" "instances" {
   health_check_type         = var.alb_healthcheck
   force_delete              = true
   vpc_zone_identifier       = var.private_subnets
-  target_group_arns         = length(var.target_group_arns) == 0 ? null : var.target_group_arns 
-  
+  target_group_arns         = length(var.target_group_arns) == 0 ? null : var.target_group_arns
+
   launch_template {
     name    = aws_launch_template.instances.name
     version = "$Latest"

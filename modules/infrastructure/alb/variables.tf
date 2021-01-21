@@ -16,12 +16,12 @@ variable "vpc" {
 }
 
 variable "private_subnets" {
-  type        = list
+  type        = list(any)
   description = "Comes from networking template"
 }
 
 variable "public_subnets" {
-  type        = list
+  type        = list(any)
   description = "Comes from networking template"
 }
 
@@ -40,9 +40,9 @@ variable "test_port" {
 data "aws_availability_zones" "azs" {}
 
 locals {
-  name_tag_prefix   = "${var.project_name}-${var.environment}"
-  num_pub_subnet    = length(var.public_subnets)
-  num_azs           = length(data.aws_availability_zones.azs.zone_ids)
-  elb_subnets       = local.num_pub_subnet > local.num_azs ? slice(var.public_subnets, 0, local.num_azs) : var.public_subnets
+  name_tag_prefix = "${var.project_name}-${var.environment}"
+  num_pub_subnet  = length(var.public_subnets)
+  num_azs         = length(data.aws_availability_zones.azs.zone_ids)
+  elb_subnets     = local.num_pub_subnet > local.num_azs ? slice(var.public_subnets, 0, local.num_azs) : var.public_subnets
 
 }

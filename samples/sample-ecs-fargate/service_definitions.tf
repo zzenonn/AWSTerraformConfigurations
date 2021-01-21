@@ -1,7 +1,7 @@
 resource "aws_iam_role" "ecs_execution_role" {
-  count       = length(local.execution_policies) > 0 ? 1 : 0
-  name        = "${var.project_name}-${var.environment}-EcsRole"
-  path        = "/${var.project_name}/${var.environment}/"
+  count = length(local.execution_policies) > 0 ? 1 : 0
+  name  = "${var.project_name}-${var.environment}-EcsRole"
+  path  = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
 {
@@ -27,16 +27,16 @@ EOF
 }
 
 resource "aws_iam_role_policy" "execution_policy" {
-  for_each    = local.execution_policies
-  name        = "${var.project_name}-${var.environment}-${each.key}-Policy"
-  role        = aws_iam_role.ecs_execution_role[0].id
-  policy      = each.value
+  for_each = local.execution_policies
+  name     = "${var.project_name}-${var.environment}-${each.key}-Policy"
+  role     = aws_iam_role.ecs_execution_role[0].id
+  policy   = each.value
 }
 
 resource "aws_iam_role" "task_role" {
-  count       = length(local.task_policies) > 0 ? 1 : 0
-  name        = "${var.project_name}-${var.environment}-TaskRole"
-  path        = "/${var.project_name}/${var.environment}/"
+  count = length(local.task_policies) > 0 ? 1 : 0
+  name  = "${var.project_name}-${var.environment}-TaskRole"
+  path  = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
 {
@@ -61,10 +61,10 @@ EOF
 }
 
 resource "aws_iam_role_policy" "task_policy" {
-  for_each    = local.task_policies
-  name        = "${var.project_name}-${var.environment}-${each.key}-Policy"
-  role        = aws_iam_role.task_role[0].id
-  policy      = each.value
+  for_each = local.task_policies
+  name     = "${var.project_name}-${var.environment}-${each.key}-Policy"
+  role     = aws_iam_role.task_role[0].id
+  policy   = each.value
 }
 
 
@@ -80,7 +80,7 @@ resource "aws_ecs_task_definition" "services" {
   task_role_arn            = aws_iam_role.task_role[0].arn
   execution_role_arn       = aws_iam_role.ecs_execution_role[0].arn
   requires_compatibilities = ["FARGATE"]
-  
+
   container_definitions = <<-EOF
 [
   {
@@ -104,18 +104,18 @@ resource "aws_security_group" "task" {
   vpc_id      = module.network.vpc
 
   ingress {
-    from_port        = 0
-    to_port          = 65535
-    protocol         = 6
-    security_groups  = [module.alb.alb_sg]
-    description      = "Allow from ELB to this instance"
+    from_port       = 0
+    to_port         = 65535
+    protocol        = 6
+    security_groups = [module.alb.alb_sg]
+    description     = "Allow from ELB to this instance"
   }
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = -1
-    cidr_blocks      = ["0.0.0.0/0"]
-    description      = "Allow to everywhere"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow to everywhere"
   }
 
   tags = {
@@ -132,12 +132,12 @@ resource "aws_ecs_service" "services" {
   launch_type     = "FARGATE"
   task_definition = aws_ecs_task_definition.services[each.key].arn
   desired_count   = 2
-  
+
   network_configuration {
     subnets         = module.network.private_subnets
     security_groups = [aws_security_group.task.id]
   }
-  
+
   deployment_controller {
     type = "CODE_DEPLOY"
   }

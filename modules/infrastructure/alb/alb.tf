@@ -23,13 +23,13 @@ resource "aws_security_group" "elb" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow from anywhere to the app port ${var.elb_port} on this ELB"
   }
-  
+
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = -1
-    cidr_blocks      = ["0.0.0.0/0"]
-    description      = "Allow to everywhere from ELB"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow to everywhere from ELB"
   }
 
   tags = {

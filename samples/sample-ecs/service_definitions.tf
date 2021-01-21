@@ -7,7 +7,7 @@ resource "aws_ecs_task_definition" "services" {
   memory                   = 128
   family                   = lower("${local.name_tag_prefix}-${each.key}")
   requires_compatibilities = ["EC2"]
-  
+
   container_definitions = <<-EOF
 [
   {
@@ -31,7 +31,7 @@ resource "aws_ecs_service" "services" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.services[each.key].arn
   desired_count   = 2
-  
+
   deployment_controller {
     type = "CODE_DEPLOY"
   }

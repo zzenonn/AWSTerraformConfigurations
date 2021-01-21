@@ -4,24 +4,24 @@ provider "aws" {
 }
 
 module "network" {
-    source          = "../../modules/infrastructure/network"
-    project_name    = var.project_name
-    environment     = var.environment
-    db_port         = var.db_port
-    networks        = var.networks
+  source       = "../../modules/infrastructure/network"
+  project_name = var.project_name
+  environment  = var.environment
+  db_port      = var.db_port
+  networks     = var.networks
 }
 
 module "webapp" {
-    source  = "../../modules/infrastructure/asg_and_alb"
-    project_name        = module.network.project_name
-    environment         = module.network.environment
-    vpc                 = module.network.vpc
-    private_subnets     = module.network.private_subnets
-    public_subnets      = module.network.public_subnets
-    base_ami            = "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
-    target_group_arns   = [aws_lb_target_group.app.arn]
-    iam_policies        = local.ssm_policy
-    userdata        = <<-EOF
+  source            = "../../modules/infrastructure/asg_and_alb"
+  project_name      = module.network.project_name
+  environment       = module.network.environment
+  vpc               = module.network.vpc
+  private_subnets   = module.network.private_subnets
+  public_subnets    = module.network.public_subnets
+  base_ami          = "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+  target_group_arns = [aws_lb_target_group.app.arn]
+  iam_policies      = local.ssm_policy
+  userdata          = <<-EOF
         #!/bin/bash
         # Install Apache Web Server and PHP
         yum install -y httpd mysql php

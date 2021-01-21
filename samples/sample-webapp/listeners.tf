@@ -24,12 +24,12 @@ resource "aws_autoscaling_policy" "webapp" {
   adjustment_type           = "ChangeInCapacity"
   autoscaling_group_name    = module.webapp.asg
   estimated_instance_warmup = 60
-  
-  
-  target_tracking_configuration{
+
+
+  target_tracking_configuration {
     predefined_metric_specification {
-      predefined_metric_type    = "ASGAverageCPUUtilization"
-      
+      predefined_metric_type = "ASGAverageCPUUtilization"
+
     }
     target_value = 60
   }
