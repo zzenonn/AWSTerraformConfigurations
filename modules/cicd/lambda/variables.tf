@@ -40,16 +40,10 @@ variable "codebuild_image" {
   description = "Image to use with codebuild"
 }
 
-variable "codedeploy_app" {
+variable "pipeline_cfn_role" {
   type        = string
   default     = ""
-  description = "Codedeploy app for this deployment"
-}
-
-variable "codedeploy_deployment_group" {
-  type        = string
-  default     = ""
-  description = "Codedeploy deployment group for this deployment"
+  description = "Role used to create Lambda functions and APIGWs"
 }
 
 variable "codestar_connection_arn" {
@@ -63,6 +57,8 @@ variable "codebuild_environment_vars" {
   default     = {}
   description = "Environment variables for codebuild"
 }
+
+
 
 locals {
   name_tag_prefix = "${var.project_name}-${var.environment}-${var.service}"

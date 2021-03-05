@@ -1,6 +1,5 @@
 /*
-This template is for provisioning of a cicd pipeline with an ecs blue green 
-deployment
+This template is for provisioning of a cicd pipeline for Lambda Functions
 */
 
 resource "aws_s3_bucket" "artifact_store" {
@@ -116,53 +115,11 @@ resource "aws_iam_role_policy" "codepipeline" {
         },
         {
             "Action": [
-                "opsworks:CreateDeployment",
-                "opsworks:DescribeApps",
-                "opsworks:DescribeCommands",
-                "opsworks:DescribeDeployments",
-                "opsworks:DescribeInstances",
-                "opsworks:DescribeStacks",
-                "opsworks:UpdateApp",
-                "opsworks:UpdateStack"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "cloudformation:CreateStack",
-                "cloudformation:DeleteStack",
-                "cloudformation:DescribeStacks",
-                "cloudformation:UpdateStack",
-                "cloudformation:CreateChangeSet",
-                "cloudformation:DeleteChangeSet",
-                "cloudformation:DescribeChangeSet",
-                "cloudformation:ExecuteChangeSet",
-                "cloudformation:SetStackPolicy",
-                "cloudformation:ValidateTemplate"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuild"
             ],
             "Resource": "*",
             "Effect": "Allow"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "devicefarm:ListProjects",
-                "devicefarm:ListDevicePools",
-                "devicefarm:GetRun",
-                "devicefarm:GetUpload",
-                "devicefarm:CreateUpload",
-                "devicefarm:ScheduleRun"
-            ],
-            "Resource": "*"
         },
         {
             "Effect": "Allow",
@@ -312,6 +269,11 @@ resource "aws_codebuild_project" "service" {
       value = lower(var.service)
     }
 
+    environment_variable {
+      name  = "BUILD_OUTPUT_BUCKET"
+      value = aws_s3_bucket.artifact_store.bucket
+    }
+
     dynamic "environment_variable" {
       for_each = var.codebuild_environment_vars
 
@@ -386,6 +348,7 @@ resource "aws_codepipeline" "codepipeline" {
 	"value": "#{SourceVariables.CommitId}",
 	"type": "PLAINTEXT"
 }]
+
 EOF
         ProjectName          = aws_codebuild_project.service.name
       }
@@ -396,23 +359,45 @@ EOF
     name = "Deploy"
 
     action {
-      name            = "Deploy"
+      name            = "CreateChangeSet"
       category        = "Deploy"
       owner           = "AWS"
-      provider        = "CodeDeployToECS"
-      input_artifacts = ["${local.name_tag_prefix}-build_output"]
+      provider        = "CloudFormation"
+      input_artifacts = ["build_output"]
       version         = "1"
+      run_order       = "1"
 
       configuration = {
-        ApplicationName                = var.codedeploy_app
-        DeploymentGroupName            = var.codedeploy_deployment_group
-        TaskDefinitionTemplateArtifact = "build_output"
-        TaskDefinitionTemplatePath     = "taskdef.json"
-        AppSpecTemplateArtifact        = "build_output"
-        AppSpecTemplatePath            = "appspec.yaml"
-        Image1ArtifactName             = "build_output"
-        Image1ContainerName            = "IMAGE1_NAME"
+        ActionMode         = "CHANGE_SET_REPLACE"
+        RoleArn            = var.pipeline_cfn_role
+        ChangeSetName      = "${local.name_tag_prefix}-ChangeSet"
+        TemplatePath       = "${local.name_tag_prefix}-build_output::app-output_sam.yaml"
+        Capabilities       = "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND"
+        ParameterOverrides = <<EOF
+{
+    "Environment": "${var.environment}",
+    "ProjectName": "${var.project_name}",
+    "Service": "${var.service}"
+}
+EOF
 
+      }
+    }
+
+    action {
+      name            = "DeployChangeSet"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "CloudFormation"
+      input_artifacts = ["build_output"]
+      version         = "1"
+      run_order       = "1"
+
+      configuration = {
+        ActionMode    = "CHANGE_SET_EXECUTE"
+        RoleArn       = var.pipeline_cfn_role
+        ChangeSetName = "${local.name_tag_prefix}-ChangeSet"
+        StackName     = "${local.name_tag_prefix}-Stack"
       }
     }
   }
