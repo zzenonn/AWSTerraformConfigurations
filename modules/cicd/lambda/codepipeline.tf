@@ -373,13 +373,11 @@ EOF
         ChangeSetName      = "${local.name_tag_prefix}-ChangeSet"
         TemplatePath       = "${local.name_tag_prefix}-build_output::app-output_sam.yaml"
         Capabilities       = "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND"
-        ParameterOverrides = <<EOF
-{
-    "Environment": "${var.environment}",
-    "ProjectName": "${var.project_name}",
-    "Service": "${var.service}"
-}
-EOF
+        ParameterOverrides = {
+            Environment = var.environment
+            ProjectName = var.project_name
+            Service = var.service
+        }
 
       }
     }
