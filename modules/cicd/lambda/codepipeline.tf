@@ -378,7 +378,7 @@ EOF
 {
     "Environment": "${var.environment}",
     "ProjectName": "${var.project_name}",
-    "Service": "${var.service}"
+    "ServiceName": "${var.service}"
 }
 EOF
 
