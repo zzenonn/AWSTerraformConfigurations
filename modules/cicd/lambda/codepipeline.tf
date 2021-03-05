@@ -373,6 +373,7 @@ EOF
         ChangeSetName      = "${local.name_tag_prefix}-ChangeSet"
         TemplatePath       = "${local.name_tag_prefix}-build_output::app-output_sam.yaml"
         Capabilities       = "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND"
+        StackName          = "${local.name_tag_prefix}-Stack"
         ParameterOverrides = <<EOF
 {
     "Environment": "${var.environment}",
@@ -391,7 +392,7 @@ EOF
       provider        = "CloudFormation"
       input_artifacts = ["build_output"]
       version         = "1"
-      run_order       = "1"
+      run_order       = "2"
 
       configuration = {
         ActionMode    = "CHANGE_SET_EXECUTE"

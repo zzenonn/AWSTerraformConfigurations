@@ -42,7 +42,6 @@ variable "codebuild_image" {
 
 variable "pipeline_cfn_role" {
   type        = string
-  default     = ""
   description = "Role used to create Lambda functions and APIGWs"
 }
 
