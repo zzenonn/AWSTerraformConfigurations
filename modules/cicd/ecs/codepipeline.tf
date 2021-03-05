@@ -197,7 +197,7 @@ EOF
 
 
 resource "aws_iam_role" "codebuild" {
-  name_prefix = "${local.name_tag_prefix}-Codebuild"
+  name_prefix = local.name_tag_prefix
   path        = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
@@ -335,7 +335,7 @@ resource "aws_codebuild_project" "service" {
 }
 
 resource "aws_codepipeline" "codepipeline" {
-  name     = "${local.name_tag_prefix}-Pipeline"
+  name     = local.name_tag_prefix
   role_arn = aws_iam_role.codepipeline.arn
 
   artifact_store {

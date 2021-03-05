@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "artifact_store" {
 }
 
 resource "aws_iam_role" "codepipeline" {
-  name_prefix = "${local.name_tag_prefix}-Pipeline"
+  name_prefix = local.name_tag_prefix
   path        = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
@@ -154,7 +154,7 @@ EOF
 
 
 resource "aws_iam_role" "codebuild" {
-  name_prefix = "${local.name_tag_prefix}-Codebuild"
+  name_prefix = local.name_tag_prefix
   path        = "/${var.project_name}/${var.environment}/"
 
   assume_role_policy = <<EOF
