@@ -363,7 +363,7 @@ EOF
       category        = "Deploy"
       owner           = "AWS"
       provider        = "CloudFormation"
-      input_artifacts = ["build_output"]
+      input_artifacts = ["${local.name_tag_prefix}-build_output"]
       version         = "1"
       run_order       = "1"
 
@@ -390,7 +390,7 @@ EOF
       category        = "Deploy"
       owner           = "AWS"
       provider        = "CloudFormation"
-      input_artifacts = ["build_output"]
+      output_artifacts = ["${local.name_tag_prefix}-ChangeSet"]
       version         = "1"
       run_order       = "2"
 
