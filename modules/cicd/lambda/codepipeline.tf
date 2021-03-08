@@ -370,10 +370,10 @@ EOF
       configuration = {
         ActionMode         = "CHANGE_SET_REPLACE"
         RoleArn            = var.pipeline_cfn_role
-        ChangeSetName      = "${local.name_tag_prefix}-ChangeSet"
+        ChangeSetName      = "${local.name_tag_prefix}-changeset"
         TemplatePath       = "${local.name_tag_prefix}-build_output::app-output_sam.yaml"
         Capabilities       = "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND"
-        StackName          = "${local.name_tag_prefix}-Stack"
+        StackName          = "${local.name_tag_prefix}-stack"
         ParameterOverrides = <<EOF
 {
     "Environment": "${var.environment}",
@@ -390,15 +390,15 @@ EOF
       category        = "Deploy"
       owner           = "AWS"
       provider        = "CloudFormation"
-      output_artifacts = ["${local.name_tag_prefix}-ChangeSet"]
+      output_artifacts = ["${local.name_tag_prefix}-changeset"]
       version         = "1"
       run_order       = "2"
 
       configuration = {
         ActionMode    = "CHANGE_SET_EXECUTE"
         RoleArn       = var.pipeline_cfn_role
-        ChangeSetName = "${local.name_tag_prefix}-ChangeSet"
-        StackName     = "${local.name_tag_prefix}-Stack"
+        ChangeSetName = "${local.name_tag_prefix}-changeset"
+        StackName     = "${local.name_tag_prefix}"
       }
     }
   }
