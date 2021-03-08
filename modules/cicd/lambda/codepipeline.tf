@@ -373,7 +373,7 @@ EOF
         ChangeSetName      = "${local.name_tag_prefix}-changeset"
         TemplatePath       = "${local.name_tag_prefix}-build_output::app-output_sam.yaml"
         Capabilities       = "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND"
-        StackName          = "${local.name_tag_prefix}-stack"
+        StackName          = local.name_tag_prefix
         ParameterOverrides = <<EOF
 {
     "Environment": "${var.environment}",
@@ -398,7 +398,7 @@ EOF
         ActionMode    = "CHANGE_SET_EXECUTE"
         RoleArn       = var.pipeline_cfn_role
         ChangeSetName = "${local.name_tag_prefix}-changeset"
-        StackName     = "${local.name_tag_prefix}"
+        StackName     = local.name_tag_prefix
       }
     }
   }
