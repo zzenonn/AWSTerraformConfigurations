@@ -45,6 +45,11 @@ variable "pipeline_cfn_role" {
   description = "Role used to create Lambda functions and APIGWs"
 }
 
+variable "pipeline_cfn_role" {
+  type        = string
+  description = "Role used to create Lambda functions and APIGWs"
+}
+
 variable "codestar_connection_arn" {
   type        = string
   default     = ""
