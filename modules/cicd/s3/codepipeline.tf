@@ -377,4 +377,5 @@ EOF
         BucketName         = aws_s3_bucket.app.name
         Extract            = true
       }
+    }
 }
