@@ -374,7 +374,7 @@ EOF
       run_order       = "1"
 
       configuration = {
-        BucketName         = aws_s3_bucket.app.name
+        BucketName         = aws_s3_bucket.app.bucket
         Extract            = true
       }
     }
