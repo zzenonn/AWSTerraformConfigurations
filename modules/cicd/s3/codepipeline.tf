@@ -33,7 +33,7 @@ resource "aws_s3_bucket_policy" "policy" {
                 "AWS": "${aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn}"
             },
             "Action": "s3:GetObject",
-            "Resource": "${aws_s3_bucket.app.arn}"
+            "Resource": "${aws_s3_bucket.app.arn}/*"
         }
     ]
 }
