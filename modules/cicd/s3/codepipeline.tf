@@ -16,7 +16,12 @@ resource "aws_s3_bucket" "app" {
   bucket_prefix = lower(local.name_tag_prefix)
   acl           = "private"
   force_destroy = true
-  policy        = <<EOF
+}
+
+resource "aws_s3_bucket_policy" "policy" {
+  bucket = aws_s3_bucket.app.id
+
+  policy = <<EOF
 {
     "Version": "2008-10-17",
     "Id": "PolicyForCloudFrontPrivateContent",
@@ -28,7 +33,7 @@ resource "aws_s3_bucket" "app" {
                 "AWS": "${aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn}"
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::zenon-cloudfront/*"
+            "Resource": "${aws_s3_bucket.app.arn}"
         }
     ]
 }
