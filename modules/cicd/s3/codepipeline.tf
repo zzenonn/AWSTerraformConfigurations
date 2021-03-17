@@ -1,5 +1,5 @@
 /*
-This template is for provisioning of a cicd pipeline for Lambda Functions
+This template is for provisioning of a cicd pipeline for S3 deployment
 */
 
 resource "aws_s3_bucket" "artifact_store" {
