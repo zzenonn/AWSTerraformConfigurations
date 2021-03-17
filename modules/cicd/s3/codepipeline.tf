@@ -8,10 +8,31 @@ resource "aws_s3_bucket" "artifact_store" {
   force_destroy = true
 }
 
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  comment = "For web app"
+}
+
 resource "aws_s3_bucket" "app" {
   bucket_prefix = lower(local.name_tag_prefix)
   acl           = "private"
   force_destroy = true
+  policy        = <<EOF
+{
+    "Version": "2008-10-17",
+    "Id": "PolicyForCloudFrontPrivateContent",
+    "Statement": [
+        {
+            "Sid": "1",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "${aws_cloudfront_origin_access_identity.origin_access_identity.iam_arn}"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::zenon-cloudfront/*"
+        }
+    ]
+}
+EOF
 }
 
 resource "aws_iam_role" "codepipeline" {
