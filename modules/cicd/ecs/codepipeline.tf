@@ -406,11 +406,11 @@ EOF
       configuration = {
         ApplicationName                = var.codedeploy_app
         DeploymentGroupName            = var.codedeploy_deployment_group
-        TaskDefinitionTemplateArtifact = "build_output"
+        TaskDefinitionTemplateArtifact = "${local.name_tag_prefix}-build_output"
         TaskDefinitionTemplatePath     = "taskdef.json"
-        AppSpecTemplateArtifact        = "build_output"
+        AppSpecTemplateArtifact        = "${local.name_tag_prefix}-build_output"
         AppSpecTemplatePath            = "appspec.yaml"
-        Image1ArtifactName             = "build_output"
+        Image1ArtifactName             = "${local.name_tag_prefix}-build_output"
         Image1ContainerName            = "IMAGE1_NAME"
 
       }
