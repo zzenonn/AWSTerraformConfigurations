@@ -132,6 +132,7 @@ resource "aws_subnet" "private" {
     Name    = "${local.name_tag_prefix}-PrivateSubnet${count.index + 1}"
     Env     = var.environment
     Project = var.project_name
+    "kubernetes.io/role/internal-elb" = "1"
   }
 }
 

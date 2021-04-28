@@ -16,6 +16,22 @@ module "network" {
   networks     = var.networks
 }
 
+resource "aws_ec2_tag" "private_subnet" {
+  count       = var.networks.private_subnets
+  resource_id = module.network.private_subnets[count.index]
+  key         = "kubernetes.io/role/internal-elb"
+  value       = "1"
+}
+
+resource "aws_ec2_tag" "public_subnet" {
+  count       = var.networks.public_subnets
+  resource_id = module.network.public_subnets[count.index]
+  key         = "kubernetes.io/role/elb"
+  value       = "1"
+}
+
+
+
 # module "webapp" {
 #   source          = "../../modules/infrastructure/asg_and_alb"
 #   project_name    = module.network.project_name
