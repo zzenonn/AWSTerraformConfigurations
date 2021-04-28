@@ -10,7 +10,7 @@ metadata:
   # Namespace the ALB Ingress Controller should run in. Does not impact which
   # namespaces it's able to resolve ingress resource for. For limiting ingress
   # namespace scope, see --watch-namespace.
-  namespace: 2048-game
+  namespace: kube-system
 spec:
   selector:
     matchLabels:
@@ -40,7 +40,7 @@ spec:
 
             # AWS VPC ID this ingress controller will use to create AWS resources.
             # If unspecified, it will be discovered from ec2metadata.
-            - --aws-vpc-id=vpc-0371fd01c357f4d68
+            - --aws-vpc-id=vpc-0e4d73da27c1327bf
 
             # AWS region this ingress controller will operate in.
             # If unspecified, it will be discovered from ec2metadata.
@@ -66,5 +66,5 @@ spec:
             #- name: AWS_SECRET_ACCESS_KEY
             #  value: SECRETVALUE
           # Repository location of the ALB Ingress Controller.
-          image: docker.io/amazon/aws-alb-ingress-controller:v1.1.5
-      serviceAccountName: alb-ingress-controller
+          image: docker.io/amazon/aws-alb-ingress-controller:v1.1.9
+      serviceAccountName: aws-load-balancer-controller

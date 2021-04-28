@@ -204,11 +204,11 @@ data "aws_iam_policy_document" "kube_sa_assume_role_policy" {
       values   = ["sts.amazonaws.com"]
     }
 
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
-    #   values   = ["system:serviceaccount:kube-system:aws-node,system:serviceaccount:2048-game:alb-ingress-controller"]
-    # }
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:aws-node","system:serviceaccount:kube-system:aws-load-balancer-controller"]
+    }
 
     # condition {
     #   test     = "StringEquals"
@@ -342,6 +342,16 @@ resource "aws_iam_role_policy" "kube_sa" {
             ],
             "Resource": "*",
             "Effect": "Allow"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+              "wafv2:GetWebACL",
+              "wafv2:GetWebACLForResource",
+              "wafv2:AssociateWebACL",
+              "wafv2:DisassociateWebACL"
+            ],
+            "Resource": "*"
         },
         {
             "Action": [

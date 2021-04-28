@@ -8,7 +8,7 @@ resource "aws_eks_cluster" "cluster" {
   role_arn = aws_iam_role.cluster_role.arn
 
   vpc_config {
-    subnet_ids = module.network.private_subnets
+    subnet_ids = concat(module.network.private_subnets, module.network.public_subnets)
   }
 
   encryption_config {
@@ -22,9 +22,7 @@ resource "aws_eks_cluster" "cluster" {
   # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
   depends_on = [
     aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.AmazonEKSVPCResourceController,
-    aws_ec2_tag.public_subnet, 
-    aws_ec2_tag.private_subnet
+    aws_iam_role_policy_attachment.AmazonEKSVPCResourceController
   ]
 }
 
