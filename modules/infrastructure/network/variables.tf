@@ -16,6 +16,12 @@ variable "db_port" {
   description = "Port of the database being used"
 }
 
+variable "eks_cluster" {
+  type        = string
+  default     = "None"
+  description = "Port of the database being used"
+}
+
 # NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS
 variable "networks" {
   type = object({

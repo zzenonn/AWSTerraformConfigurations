@@ -64,6 +64,7 @@ resource "aws_subnet" "public" {
     Env     = var.environment
     Project = var.project_name
     "kubernetes.io/role/elb" = "1" # In case network is used with EKS ELB Controller
+    "kubernetes.io/cluster/${var.eks_cluster}" = "shared" # In case network is used with EKS ELB Controller
   }
 }
 
@@ -134,6 +135,7 @@ resource "aws_subnet" "private" {
     Env     = var.environment
     Project = var.project_name
     "kubernetes.io/role/internal-elb" = "1" # In case network is used with EKS ELB Controller
+    "kubernetes.io/cluster/${var.eks_cluster}" = "shared" # In case network is used with EKS ELB Controller
   }
 }
 
@@ -164,6 +166,7 @@ resource "aws_subnet" "db" {
     Name    = "${local.name_tag_prefix}-DbSubnet${count.index + 1}"
     Env     = var.environment
     Project = var.project_name
+    
   }
 }
 

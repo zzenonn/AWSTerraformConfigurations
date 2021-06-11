@@ -14,6 +14,7 @@ module "network" {
   environment  = var.environment
   db_port      = var.db_port
   networks     = var.networks
+  eks_cluster  = "${local.name_tag_prefix}-Cluster"
 }
 
 # module "webapp" {
