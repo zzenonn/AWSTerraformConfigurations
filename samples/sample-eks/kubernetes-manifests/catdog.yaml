@@ -1,0 +1,130 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSI4ODM3NzkwNzQzMjMuZGtyLmVjci5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tIjogewoJCQkiYXV0aCI6ICJRVmRUT21WNVNuZFpXR3h6WWpKR2EwbHFiMmxaTWtsM1VXNXdZVlJGVmpWbFdHdzBaRVpDUzFwdVdsRlRhVGwzVjIxT1RWUldiRlZOYXpGSFRERk9WRlZzU2tWbGJHaHJVV3MxYTFkclZqWk9NMnd4Vkd0NFExWXhXazlSV0dSS1VYcG9ZVTVYT1VST1ZVNUxWa1UxYkZsdVFrVkxNMVYzV1c1Q2RsWnRVbkprYTNCUVZGaFdWMkpVUmtWbFZHczFWVEJrZG1ORlRsaFhha0pMV2xSTmNrOUZVa05aYTNCc1YxVkdVVkpZUmtKamJuQlBZMGRrVDFReFNYZGhWbXgxVlhwak5Fc3lkRmRVYlZVMVpFUlNWRkp0UmsxTE1uUkxVM2wwTkZWR2NESlJNSEJ2WTIwNWJXUnNSbWhUYlZKTVdUSldSVlJ1UmtKT2EzQk9WWHBrZFdKV1ZuTmlSRUpQVWpGSk5GVkZNVTVUTURsVVZtNUdSMkpGTlV0WlZUZ3lXVzVhZEdOSWFGVmtNamt6VGtWUmNtTXhUbEpUYm1kNVlWVXdlRlV4VGxkaFJYaDVVMVpXUTJJelJuaFNhMGw0WWtaR2JtTnNTbTVsV0ZaTFYyMHhWMlJwZEhCT1JWSkdVMVpDUzFsWGFEUlhTRlV6V2tkT2RHTldXbkJoUldoVVdURm9jMVJIZEZKa01HUjVWRWRHTTJWdVFrWlRNVUYyVjBWNGFVOUhUalZhUjFreFdXNWtNMWRGYUV4TmJrb3dVbFJDV2xrelNrMWFWMmhIV2pOc1dWWjZTa05rTVZrelRVYzVNRlpxUmsxaFJHUnpZMjE0VlZOWVFtOU9Wa0kxWldwQmVVMXNXalZVUlRWTVZUQk9VbVZzUVRKWmJrVTBUbWwwY0ZaRE9VcFpNMXBTVTIweGFGa3dSa2xqTTFsM1pHMWtUV0ZIVGxKWk1qVlhZVlZLVEU0eVRreE5SV2h0WWtaa01rMHdWbGxPVlVwNFpFWmtlV1JWVGxsa2EzQlRZekZrVldWclpFOVNhMlI2VlVSQ2JsUjZZelZqVmtKeVRESTFkbFpUT0hsWlYxSTBXVzA1TkZNelVtaGlhMnhzVjI1d1RGWXdjRWxrYldoVlVWVnNWMWxZVVhaamVrNWFXVE5hUmxKNmFIZGhSVlpEU3pKS01WWkZXa2hsUjFWM1dqQjBSRmxxV25aa1JrNXRVakJrY21GNlVURk5RM1JWV2pKT1ZVOVlaRWxUU0ZaSFlraFpNVk50WkhsUk1VVjJZWHBrYldOVk1EUlVWVVpRWTBjeGVHTlhNV0ZQUldoRFducEtOVkpZYURKVWJVWkxUbFpXY1dKR1dUTlJhM0EwWkVacmVGSklTVE5QUldod1RWZHNlbHBXYUV4alZWWllWMnBXVGs1VVduVmhNR3N5VDFoc1dXVkZaSEJrZWxaWlRteHdkRTE2UW1oWmFsa3dXVlU1VmxaSGNIZFNNakZWVmtSYWVsRXhjSEZsVm1SNlZFVTFRMkZGZEVka1F6bHpVakZOZVdWVVFtdE9NR3cyVVhwUk1GWnNhRzlYV0ZwNFUxVnJlVlJGYkhObFJHeHpWR3h3YUZwdE5XOVZNMUpIVVROS2RsSnJVa3RWU0VweFUxZE5lR0ZyV2xaYWJVMHhXak5vVjFOWVZrUlNSRUpOVTBoT2JsZEhkRUpQVlhSclkxY3hibHByT0hKaWVrNHpUMVJvVEZaV1JsbFVSVXAwWTI1R2NWa3hXazlqYTNoTlZHcEtjMk15VW5OTE1tZDNXakowYUdSWGFEQlBSemx2VXpOYVVGTlhjRTloVjNOM1RsZE9lV1JGTVd4VFNFWTBVV3hLV0dOcmVHeFBSWEI1V2toR1dHRXpTbkpWV0hCVFQwWk5NR1JUT1ZoYWJIQm9ZVmhTZW1WVmJFTlNRemxKVVRKT05GRldaRFpoVkZweVV6TldUVlZ1Um5SVVJGcENUbTVXZGsxVmJFSlZTRlpzWkZaS2MxbFVhekpOU0dScVlVUmFXbUpyTURKVlZuQk5VV3hhYmt3d05USlZNMFUxWlc1YWExSlZXWEphTW1ocFpXdGFNV0p1VmtwYVZUQjJVakJLWVU1dVJubGtWMnN6Vm1wYVdWcElXa0pOUldoTVlqQktkMlF4VmtoTU0wNHlXbFJhZUdOc1NrdE5iRTVzWlVSU1ZXRXhVbk5SYkVKMlVXeHdURlpVWXpSbFZ6bFlUMFJCTVZGcVJuVmlhWFJhVERCb1NtTlZSa2hTYTBaVFUxVmtObEZ0VlRSUk1FbHlaV3BvVFZwVGRGaGlia3BSV2xWU01rMVZiRlJqTUdSRlZHMU9UMWxyV2pSaGEyeEVUSHBhVkZkdWFFVmhSbVJwVXpKNFRrOUZSbFZXVmtJMVUxaEtSVlY2YkVsYU1YQnNaR3RPVFdGdGNFbFpiRXB1WVVSTmRtVkZSa2hoYXpWNFZVVndiV0pHVm5kVmJUZ3lWak5rVUdOdE1IbFBWVTAxWTBoa1ExRnNXVEpUYlhoT1lUSmtTbEV6UVhsbFdFMXlWMVU1VTFkVk9WUmlSVkYyWkc1b1JXUnRNVVpPYkVWNlkxUlNXR0pGVmxsYWJHUTJXVlZOTkZRd05ESkxlbXhEV2xkR1UyTXlSbnBrUjJSclUyMTRjV0ZVV2xCT01IUlRXak53V1ZaNWRHNU9hMDVwVERGc1NsTkhaRWRYYWs0eVlXeEtlRTFWV2tKTlZVcExXVmhWZW1GWWNIRldXRlpXWVcwNVZsZHNSbTlYUjNoVFkzcGtWbEo2Vm5sTmFteHdXVzFzVkZkc2NFZFdTRXB6WXpKT2JHTklaRmxVUlhBMFVWUkNVRk51V21sVFJHUnZWVlZXTTJWRmVHcFZWMFpDV1ZVNU5WbFhSblZUTUdodFRUQktkV0ZYTURGU01sVTFTek5LZDJFeFduQmtNMFUwWTFkV1ZHRXdjRU5qYkVsMlpERk9URkpYU201TmJrWlVVbFpWY2s1SE5VdGxWMGw0WkcxT1dscFdhM2hqV0VKMFZHdG9XbU5GVmpSYU1qbFdWR3hPU0U1RWFGTlVibXN3VDBSa2NWUnRjekJYYkZaQ1VXMHhTR1ZGVm0xa2JVWnZVVE5KTkdWcVJscFpha1pTWVd0c2FsSllielJsUjFwdlRrWkdXV1JVYkROalNFWjVWMVphYTFSdFRreFVhVGd5VXpCR1EyRkZXVEJqTVVKNll6SlNTbFZIVG10alJURXpWMVJLVFdKSFZUTlRNRVpHVmtkdk1Fd3diRzFOUmsweVRURktWbFJIY0c5Tk1WcHFWMjVPVjJOSGNGQlZWVEZMVmpOSk5GWnRXa2xrUldoVVRsVkdkbHBFVm5sak1XaElaVWhaTVdJd2VGcFdWWFJ1WTFkV01WTXpXVFJVVlZaMVZqRlNlR1F3Um5aWGF6VklUakZzU2xkdVVtbE5ia0pRWTBkc1ZGRnFaSEZrTTJNeFYyNWtNV0l6UWtOa2ExazBWRWhLUTJKRVRYZFJhVGxNWW01ck1tSnRUa1JPYVRsWFkyNWtkbUV3TVRaa2JHeHBZbFpzVGxOdVVscGFSV3d6WVZoT2FsWlRjM2RVUmtaT1RraFNTMkZJV201aWJYQjVXV3M1VUZWck5VUk9SRUpaWTI1d1NtRXdiREZPYTNNelRrWndWRlZyVmxsTlZsRXpWbXRXUmxwWGRGUmtWWEJHVGpGa2RWWnNRWGxNTW14NlV6QndibVZJUms5alIxSXpaRWh3ZFdORWJFZE5WV1JwVkRKdk1scEZhRzVrTVVaeVdtcG9TVkZ0U1RKYVJsSnNZbFV3TkZONmJIVlRSbEpGWTBoRk5WRnRPWFJaYkZZd1dYcG5NMUl5V2pOVWFtUjVaVzVTTkZkWFpFVmtha1pMVXpOSk0xRXlhRU5hTVZwWlpIcFdjMXBFVVhobFJtOTJVbnBLZGxGVlVsUlVSbHBIVGxjeGNHRXpUbGxrYldSU1pFWmFNMWRIZEhKT1IwNXRZbnBHU1dWRk1XNWhhbVIzVlROV1IyUlVUbHBpZVhSWlVuazVibUY2YkU5bGJYUk1VV3RHVkZFeVdsTmpWMVY1WWpBNGFVeERTbXRaV0ZKb1lUSldOVWxxYjJsUlZrWkdVV3RHU1dGWFVrWmpiSEJFV20xb1RGUXlWa1ZVVkVFMFN6Sk9VVTVYV2pCbFYzQXlWVlJzV1ZSVk1WUlZWRkozVTNwQ1IxZHROVEpSVm5CWlUyMWtRbEZWUmtsT1NHUnRVVlpzUzFNeU9XRlRWMmd5V1RBMVFsVlhUa2hpTUdNMFpESktVbE5WU2tKU1JVcDJVVzFrY21OWGFISmhWV00xWkhwQ1ExRnVaRVprTUdodVYxVndXbE5XY0VwUlZtUldVa1ZLUWxKWVZrNVJhMVpHVWtWV2VWZEhWbEJPUjNoSVpVZGtWbFpZYUVwTlJrb3pVMVZLUmxOVlJUTmxia3B1VkROR2ExVjZVbGxVTUZaWFRWTjBVbVJYTkRGa2JrWk5UVEl4TTJWdFpISlZiVGg1V1ZVeE1Wa3dTbkJQVlVwU1pIcENXRk13TVZSaFdHUnVZa1ZTTUZKdVFqSmhSMncxV1dwU1dHTnFhSFpXTUZJMlUwWndVbE5yVmxWV1JrNVdVVlJCZUU5RU1HbE1RMG95V2xoS2VtRlhPWFZKYW05cFRXbEpjMGx1VWpWalIxVnBUMmxLUlZGV1VrSllNSFJHVjFOSmMwbHRWalJqUjJ4NVdWaFNjR0l5TkdsUGFrVXlUVlJyTUU5VVNURk9ha281IgoJCX0KCX0KfQ== 
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+metadata:
+  name: regcred
+  namespace: catdog-dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage-deployment
+  namespace: catdog-dev
+  labels:
+    app: homepage
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: homepage
+  template:
+    metadata:
+      labels:
+        app: homepage
+    spec:
+      containers:
+      - name: homepage
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:af05cd2925b034a1424838d245062971458410b8
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage-service
+  namespace: catdog-dev
+  labels:
+    app: homepage
+spec:
+  selector:
+    app: homepage
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80
+---
+# Cat service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-deployment
+  namespace: catdog-dev
+  labels:
+    app: cat-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cat-page
+  template:
+    metadata:
+      labels:
+        app: cat-page
+    spec:
+      containers:
+      - name: cat
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:6e279cd7642978bdda647eb9e4349968d698f305
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cat-service
+  namespace: catdog-dev
+  labels:
+    app: cat-page
+spec:
+  selector:
+    app: cat-page
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80
+---
+# Dog service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dog-deployment
+  namespace: catdog-dev
+  labels:
+    app: dog-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dog-page
+  template:
+    metadata:
+      labels:
+        app: dog-page
+    spec:
+      containers:
+      - name: dog
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:49432dc056742fc05ee6e23952aed0d8fc9c95cb
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dog-service
+  namespace: catdog-dev
+  labels:
+    app: dog-page
+spec:
+  selector:
+    app: dog-page
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80
