@@ -101,88 +101,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   role       = aws_iam_role.node_role.name
 }
 
-resource "aws_iam_role_policy" "node_elb_ingress" {
-  role        = aws_iam_role.node_role.id
-  policy      = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "acm:DescribeCertificate",
-                "acm:ListCertificates",
-                "acm:GetCertificate",
-                "ec2:AuthorizeSecurityGroupIngress",
-                "ec2:CreateSecurityGroup",
-                "ec2:CreateTags",
-                "ec2:DeleteTags",
-                "ec2:DeleteSecurityGroup",
-                "ec2:DescribeAccountAttributes",
-                "ec2:DescribeAddresses",
-                "ec2:DescribeInstances",
-                "ec2:DescribeInstanceStatus",
-                "ec2:DescribeInternetGateways",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DescribeSecurityGroups",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeTags",
-                "ec2:DescribeVpcs",
-                "ec2:ModifyInstanceAttribute",
-                "ec2:ModifyNetworkInterfaceAttribute",
-                "ec2:RevokeSecurityGroupIngress",
-                "elasticloadbalancing:AddListenerCertificates",
-                "elasticloadbalancing:AddTags",
-                "elasticloadbalancing:CreateListener",
-                "elasticloadbalancing:CreateLoadBalancer",
-                "elasticloadbalancing:CreateRule",
-                "elasticloadbalancing:CreateTargetGroup",
-                "elasticloadbalancing:DeleteListener",
-                "elasticloadbalancing:DeleteLoadBalancer",
-                "elasticloadbalancing:DeleteRule",
-                "elasticloadbalancing:DeleteTargetGroup",
-                "elasticloadbalancing:DeregisterTargets",
-                "elasticloadbalancing:DescribeListenerCertificates",
-                "elasticloadbalancing:DescribeListeners",
-                "elasticloadbalancing:DescribeLoadBalancers",
-                "elasticloadbalancing:DescribeLoadBalancerAttributes",
-                "elasticloadbalancing:DescribeRules",
-                "elasticloadbalancing:DescribeSSLPolicies",
-                "elasticloadbalancing:DescribeTags",
-                "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeTargetGroupAttributes",
-                "elasticloadbalancing:DescribeTargetHealth",
-                "elasticloadbalancing:ModifyListener",
-                "elasticloadbalancing:ModifyLoadBalancerAttributes",
-                "elasticloadbalancing:ModifyRule",
-                "elasticloadbalancing:ModifyTargetGroup",
-                "elasticloadbalancing:ModifyTargetGroupAttributes",
-                "elasticloadbalancing:RegisterTargets",
-                "elasticloadbalancing:RemoveListenerCertificates",
-                "elasticloadbalancing:RemoveTags",
-                "elasticloadbalancing:SetIpAddressType",
-                "elasticloadbalancing:SetSecurityGroups",
-                "elasticloadbalancing:SetSubnets",
-                "elasticloadbalancing:SetWebACL",
-                "iam:CreateServiceLinkedRole",
-                "iam:GetServerCertificate",
-                "iam:ListServerCertificates",
-                "waf-regional:GetWebACLForResource",
-                "waf-regional:GetWebACL",
-                "waf-regional:AssociateWebACL",
-                "waf-regional:DisassociateWebACL",
-                "tag:GetResources",
-                "tag:TagResources",
-                "waf:GetWebACL"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        }
-    ]
-}
-EOF
-}
-
-# Other IAM Resources
+# OIDC allowing K8s pods to assume IAM roles
 data "tls_certificate" "eks_cluster" {
   url = aws_eks_cluster.cluster.identity[0].oidc[0].issuer
 }
@@ -210,12 +129,6 @@ data "aws_iam_policy_document" "kube_sa_assume_role_policy" {
       values   = ["system:serviceaccount:kube-system:aws-node","system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
 
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
-    #   values   = ["system:serviceaccount:2048-game:alb-ingress-controller"]
-    # }
-
     principals {
       identifiers = [aws_iam_openid_connect_provider.oidc.arn]
       type        = "Federated"
@@ -223,183 +136,15 @@ data "aws_iam_policy_document" "kube_sa_assume_role_policy" {
   }
 }
 
-resource "aws_iam_role_policy" "kube_sa" {
-  role        = aws_iam_role.kube_sa.id
-  policy      = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "acm:DescribeCertificate",
-                "acm:ListCertificates",
-                "acm:GetCertificate"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "ec2:AuthorizeSecurityGroupIngress",
-                "ec2:CreateSecurityGroup",
-                "ec2:CreateTags",
-                "ec2:DeleteTags",
-                "ec2:DeleteSecurityGroup",
-                "ec2:DescribeAccountAttributes",
-                "ec2:DescribeAddresses",
-                "ec2:DescribeInstances",
-                "ec2:DescribeInstanceStatus",
-                "ec2:DescribeInternetGateways",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DescribeSecurityGroups",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeTags",
-                "ec2:DescribeVpcs",
-                "ec2:ModifyInstanceAttribute",
-                "ec2:ModifyNetworkInterfaceAttribute",
-                "ec2:RevokeSecurityGroupIngress"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "elasticloadbalancing:AddListenerCertificates",
-                "elasticloadbalancing:AddTags",
-                "elasticloadbalancing:CreateListener",
-                "elasticloadbalancing:CreateLoadBalancer",
-                "elasticloadbalancing:CreateRule",
-                "elasticloadbalancing:CreateTargetGroup",
-                "elasticloadbalancing:DeleteListener",
-                "elasticloadbalancing:DeleteLoadBalancer",
-                "elasticloadbalancing:DeleteRule",
-                "elasticloadbalancing:DeleteTargetGroup",
-                "elasticloadbalancing:DeregisterTargets",
-                "elasticloadbalancing:DescribeListenerCertificates",
-                "elasticloadbalancing:DescribeListeners",
-                "elasticloadbalancing:DescribeLoadBalancers",
-                "elasticloadbalancing:DescribeLoadBalancerAttributes",
-                "elasticloadbalancing:DescribeRules",
-                "elasticloadbalancing:DescribeSSLPolicies",
-                "elasticloadbalancing:DescribeTags",
-                "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeTargetGroupAttributes",
-                "elasticloadbalancing:DescribeTargetHealth",
-                "elasticloadbalancing:ModifyListener",
-                "elasticloadbalancing:ModifyLoadBalancerAttributes",
-                "elasticloadbalancing:ModifyRule",
-                "elasticloadbalancing:ModifyTargetGroup",
-                "elasticloadbalancing:ModifyTargetGroupAttributes",
-                "elasticloadbalancing:RegisterTargets",
-                "elasticloadbalancing:RemoveListenerCertificates",
-                "elasticloadbalancing:RemoveTags",
-                "elasticloadbalancing:SetIpAddressType",
-                "elasticloadbalancing:SetSecurityGroups",
-                "elasticloadbalancing:SetSubnets",
-                "elasticloadbalancing:SetWebACL"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "iam:GetServerCertificate",
-                "iam:ListServerCertificates"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Condition": {
-                "StringEquals": {
-                    "iam:AWSServiceName": [
-                        "eks.amazonaws.com",
-                        "eks-nodegroup.amazonaws.com",
-                        "eks-fargate.amazonaws.com"
-                    ]
-                }
-            },
-            "Action": [
-                "iam:CreateServiceLinkedRole"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "cognito-idp:DescribeUserPoolClient"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "waf-regional:GetWebACLForResource",
-                "waf-regional:GetWebACL",
-                "waf-regional:AssociateWebACL",
-                "waf-regional:DisassociateWebACL",
-                "waf:GetWebACL"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-              "wafv2:GetWebACL",
-              "wafv2:GetWebACLForResource",
-              "wafv2:AssociateWebACL",
-              "wafv2:DisassociateWebACL"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Action": [
-                "tag:GetResources",
-                "tag:TagResources"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": "ec2:*Spot*",
-            "Resource": "*",
-            "Effect": "Deny"
-        },
-        {
-            "Condition": {
-                "StringNotEquals": {
-                    "ec2:InstanceType": [
-                        "t2.micro",
-                        "t2.small"
-                    ]
-                }
-            },
-            "Action": [
-                "ec2:StartInstances",
-                "ec2:RunInstances"
-            ],
-            "Resource": "arn:aws:ec2:*:*:instance/*",
-            "Effect": "Deny"
-        },
-        {
-            "Condition": {
-                "StringNotEqualsIgnoreCase": {
-                    "ec2:Owner": "amazon"
-                }
-            },
-            "Action": "ec2:RunInstances",
-            "Resource": "arn:aws:ec2:*:*:image/*",
-            "Effect": "Deny"
-        }
-    ]
-}
-EOF
+# IAM Policy for the ALB controller service account
+resource "aws_iam_role_policy" "kube_alb_controller" {
+  role        = aws_iam_role.kube_alb_controller.id
+  policy      = file("${path.module}/elb-controller-policy.json")
 }
 
-resource "aws_iam_role" "kube_sa" {
+resource "aws_iam_role" "kube_alb_controller" {
   assume_role_policy = data.aws_iam_policy_document.kube_sa_assume_role_policy.json
-  name               = "${local.name_tag_prefix}-Kube-SA-Role"
+  name               = "${local.name_tag_prefix}-Kube-Alb-Controller-Role"
   tags = {
     Env     = var.environment
     Project = var.project_name
