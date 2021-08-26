@@ -1,0 +1,116 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage-deployment
+  labels:
+    app: homepage
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: homepage
+  template:
+    metadata:
+      labels:
+        app: homepage
+    spec:
+      containers:
+      - name: homepage
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:af05cd2925b034a1424838d245062971458410b8
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage-service
+  labels:
+    app: homepage
+spec:
+  selector:
+    app: homepage
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80
+---
+# Cat service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-deployment
+  labels:
+    app: cat-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cat-page
+  template:
+    metadata:
+      labels:
+        app: cat-page
+    spec:
+      containers:
+      - name: cat
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:6e279cd7642978bdda647eb9e4349968d698f305
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cat-service
+  labels:
+    app: cat-page
+spec:
+  selector:
+    app: cat-page
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80
+---
+# Dog service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dog-deployment
+  labels:
+    app: dog-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dog-page
+  template:
+    metadata:
+      labels:
+        app: dog-page
+    spec:
+      containers:
+      - name: dog
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:49432dc056742fc05ee6e23952aed0d8fc9c95cb
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dog-service
+  labels:
+    app: dog-page
+spec:
+  selector:
+    app: dog-page
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80

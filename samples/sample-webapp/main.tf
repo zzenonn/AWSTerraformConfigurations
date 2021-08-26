@@ -22,14 +22,47 @@ module "webapp" {
   target_group_arns = [aws_lb_target_group.app.arn]
   iam_policies      = local.ssm_policy
   userdata          = <<-EOF
-        #!/bin/bash
-        # Install Apache Web Server and PHP
-        yum install -y httpd mysql php
-        # Download Lab files
-        wget https://us-west-2-tcprod.s3.amazonaws.com/courses/ILT-TF-100-TECESS/v4.6.8/lab-1-build-a-web-server/scripts/lab-app.zip
-        unzip lab-app.zip -d /var/www/html/
-        # Turn on web server
-        chkconfig httpd on
-        service httpd start
+      #!/bin/bash -ex
+
+      # Update yum
+      yum -y update
+
+      # Add node's source repo
+      curl -sL https://rpm.nodesource.com/setup_15.x | bash -
+
+      #Install nodejs
+      yum -y install nodejs
+
+      #Install Amazon Linux extras
+      amazon-linux-extras install epel
+
+      #Install stress tool (for load balancing testing)
+      yum -y install stress
+
+      # Create a dedicated directory for the application
+      mkdir -p /var/app
+
+      # Get the app from Amazon S3
+      wget https://aws-tc-largeobjects.s3-us-west-2.amazonaws.com/ILT-TF-100-TECESS-5/app/app.zip
+
+      # Extract it into a desired folder
+      unzip app.zip -d /var/app/
+      cd /var/app/
+
+      # Configure S3 bucket details
+      export PHOTOS_BUCKET=YOUR-S3-BUCKET-NAME
+
+      # Configure default AWS Region
+      export DEFAULT_AWS_REGION=YOUR-DEFAULT-AWS-REGION
+
+      # Enable admin tools for stress testing
+      export SHOW_ADMIN_TOOLS=1
+
+      # Install dependencies
+      npm install
+
+      # Start your app
+      npm start
+
     EOF
 }
