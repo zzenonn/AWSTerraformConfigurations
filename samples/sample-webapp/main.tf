@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "network" {
-  source       = "../../modules/infrastructure/network"
+  source       = "github.com/zzenonn/AWSTerraformConfigurations/modules/infrastructure/network"
   project_name = var.project_name
   environment  = var.environment
   db_port      = var.db_port
@@ -12,7 +12,7 @@ module "network" {
 }
 
 module "webapp" {
-  source            = "../../modules/infrastructure/asg_and_alb"
+  source            = "github.com/zzenonn/AWSTerraformConfigurations/modules/infrastructure/asg_and_alb"
   project_name      = module.network.project_name
   environment       = module.network.environment
   vpc               = module.network.vpc
