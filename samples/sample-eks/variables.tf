@@ -117,13 +117,3 @@ locals {
   }
 
 }
-
-# # Looks for existing repositories
-# data "aws_ecr_repository" "services" {
-#   for_each = local.services
-#   name     = lower("${var.project_name}/${each.key}")
-# }
-
-data "aws_iam_policy" "codedeploy_ecs" {
-  arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
-}
