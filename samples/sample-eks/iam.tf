@@ -86,6 +86,35 @@ resource "aws_iam_role" "node_role" {
   })
 }
 
+resource "aws_iam_role_policy" "node_ssm" {
+  role        = aws_iam_role.node_role.id
+  policy      = <<-EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:UpdateInstanceInformation",
+                "ssmmessages:CreateControlChannel",
+                "ssmmessages:CreateDataChannel",
+                "ssmmessages:OpenControlChannel",
+                "ssmmessages:OpenDataChannel"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetEncryptionConfiguration"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+  EOF
+}
+
 resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.node_role.name

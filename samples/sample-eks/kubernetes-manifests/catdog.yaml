@@ -2,115 +2,154 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: homepage-deployment
+  name: deployment-homepage
   labels:
-    app: homepage
+    app.kubernetes.io/name: homepage
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: homepage
+      app.kubernetes.io/name: homepage
   template:
     metadata:
       labels:
-        app: homepage
+        app.kubernetes.io/name: homepage
     spec:
       containers:
       - name: homepage
-        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:af05cd2925b034a1424838d245062971458410b8
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:6ce628dbed49b8e7a0c851469e00441cebdf5513
         ports:
         - containerPort: 80
-      imagePullSecrets:
-      - name: regcred
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: homepage-service
+  name: service-homepage
   labels:
-    app: homepage
+    app.kubernetes.io/name: homepage
 spec:
   selector:
-    app: homepage
+    app.kubernetes.io/name: homepage
   ports:
-  - port: 8080
+  - port: 80
     protocol: TCP
     targetPort: 80
+  type: NodePort
 ---
 # Cat service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cat-deployment
+  name: deployment-cat
   labels:
-    app: cat-page
+    app.kubernetes.io/name: cat-page
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cat-page
+      app.kubernetes.io/name: cat-page
   template:
     metadata:
       labels:
-        app: cat-page
+        app.kubernetes.io/name: cat-page
     spec:
       containers:
       - name: cat
         image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:6e279cd7642978bdda647eb9e4349968d698f305
         ports:
         - containerPort: 80
-      imagePullSecrets:
-      - name: regcred
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cat-service
+  name: service-cat
   labels:
-    app: cat-page
+    app.kubernetes.io/name: cat-page
 spec:
   selector:
-    app: cat-page
+    app.kubernetes.io/name: cat-page
   ports:
-  - port: 8080
+  - port: 80
     protocol: TCP
     targetPort: 80
+  type: NodePort
 ---
 # Dog service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dog-deployment
+  name: deployment-dog
   labels:
-    app: dog-page
+    app.kubernetes.io/name: dog-page
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: dog-page
+      app.kubernetes.io/name: dog-page
   template:
     metadata:
       labels:
-        app: dog-page
+        app.kubernetes.io/name: dog-page
     spec:
       containers:
       - name: dog
         image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:49432dc056742fc05ee6e23952aed0d8fc9c95cb
         ports:
         - containerPort: 80
-      imagePullSecrets:
-      - name: regcred
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: dog-service
+  name: service-dog
   labels:
-    app: dog-page
+    app.kubernetes.io/name: dog-page
 spec:
   selector:
-    app: dog-page
+    app.kubernetes.io/name: dog-page
   ports:
-  - port: 8080
+  - port: 80
     protocol: TCP
     targetPort: 80
+  type: NodePort
+---
+# Ingress for all services
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-catdog
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Exact
+          backend:
+            service:
+              name: service-homepage
+              port:
+                number: 80
+        - path: /img
+          pathType: Prefix
+          backend:
+            service:
+              name: service-homepage
+              port:
+                number: 80
+        - path: /dogs
+          pathType: Prefix
+          backend:
+            service:
+              name: service-dog
+              port:
+                number: 80
+        - path: /cats
+          pathType: Prefix
+          backend:
+            service:
+              name: service-cat
+              port:
+                number: 80
