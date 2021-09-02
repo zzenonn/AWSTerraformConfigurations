@@ -18,6 +18,13 @@ spec:
       containers:
       - name: homepage
         image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:6ce628dbed49b8e7a0c851469e00441cebdf5513
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
         ports:
         - containerPort: 80
 ---
@@ -56,6 +63,13 @@ spec:
       containers:
       - name: cat
         image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:6e279cd7642978bdda647eb9e4349968d698f305
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
         ports:
         - containerPort: 80
 ---
@@ -94,6 +108,13 @@ spec:
       containers:
       - name: dog
         image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:49432dc056742fc05ee6e23952aed0d8fc9c95cb
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
         ports:
         - containerPort: 80
 ---
