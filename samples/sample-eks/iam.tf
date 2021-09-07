@@ -24,49 +24,17 @@ resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   role       = aws_iam_role.cluster_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "CloudWatchAgentServerPolicyCluster" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.cluster_role.name
+}
+
+
 # Optionally, enable Security Groups for Pods
 # Reference: https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html
 resource "aws_iam_role_policy_attachment" "AmazonEKSVPCResourceController" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   role       = aws_iam_role.cluster_role.name
-}
-
-resource "aws_iam_role_policy" "cluster_elb_ingress" {
-  role        = aws_iam_role.cluster_role.id
-  policy      = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "elasticloadbalancing:*",
-                "ec2:CreateSecurityGroup",
-                "ec2:Describe*"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        }
-    ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy" "cluster_cloudwatch" {
-  role        = aws_iam_role.cluster_role.id
-  policy      = <<-EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "cloudwatch:PutMetricData"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        }
-    ]
-}
-EOF
 }
 
 # IAM For Node Group
@@ -99,7 +67,14 @@ resource "aws_iam_role_policy" "node_ssm" {
                 "ssmmessages:CreateControlChannel",
                 "ssmmessages:CreateDataChannel",
                 "ssmmessages:OpenControlChannel",
-                "ssmmessages:OpenDataChannel"
+                "ssmmessages:OpenDataChannel",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup",
+                "ec2:DescribeLaunchTemplateVersions"
             ],
             "Resource": "*"
         },
@@ -127,6 +102,11 @@ resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
 
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.node_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "CloudWatchAgentServerPolicyWorker" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
   role       = aws_iam_role.node_role.name
 }
 
