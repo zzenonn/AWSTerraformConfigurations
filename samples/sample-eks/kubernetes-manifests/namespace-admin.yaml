@@ -1,0 +1,25 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: namespace-admin-role
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: namespace-admin-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  name: namespace-admin-role
+  kind: Role
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: namespace-admins
