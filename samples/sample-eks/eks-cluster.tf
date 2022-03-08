@@ -6,7 +6,7 @@ resource "aws_kms_key" "ekscrypt" {
 resource "aws_eks_cluster" "cluster" {
   name     = "${local.name_tag_prefix}-Cluster"
   role_arn = aws_iam_role.cluster_role.arn
-  version = "1.19"
+  version = "1.21"
 
   vpc_config {
     subnet_ids = concat(module.network.private_subnets, module.network.public_subnets)

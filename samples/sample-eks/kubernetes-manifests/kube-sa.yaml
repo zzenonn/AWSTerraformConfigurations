@@ -51,7 +51,6 @@ subjects:
   - kind: ServiceAccount
     name: aws-load-balancer-controller
     namespace: kube-system
-
 ---
 apiVersion: v1
 kind: ServiceAccount

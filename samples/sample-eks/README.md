@@ -4,7 +4,7 @@ This terraform template creates an EKS cluster running on EC2 instances. The kub
 
 ## Using IAM Roles for Service Accounts
 
-This template creates the appropriate OIDC provider to connect the cluster's SA to IAM. To apply the SAs required for the apps, run `terraform apply -f kubernetes-manifest/kube-sa.yaml`.
+This template creates the appropriate OIDC provider to connect the cluster's SA to IAM. To apply the SAs required for the apps, run `kubectl apply -f kubernetes-manifest/kube-sa.yaml`.
 
 ## Installing the ALB Controller
 
