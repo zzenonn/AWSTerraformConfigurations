@@ -18,17 +18,18 @@ module "webapp" {
   vpc               = module.network.vpc
   private_subnets   = module.network.private_subnets
   public_subnets    = module.network.public_subnets
+  # alb_healthcheck   = "ELB"
   base_ami          = "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
   target_group_arns = [aws_lb_target_group.app.arn]
   iam_policies      = local.ssm_policy
   userdata          = <<-EOF
       #!/bin/bash -ex
 
+      # Add node's source repo
+      curl --max-time 20 --retry 5 -sL https://rpm.nodesource.com/setup_15.x | bash -
+
       # Update yum
       yum -y update
-
-      # Add node's source repo
-      curl -sL https://rpm.nodesource.com/setup_15.x | bash -
 
       #Install nodejs
       yum -y install nodejs
