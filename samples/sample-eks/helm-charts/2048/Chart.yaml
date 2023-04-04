@@ -1,0 +1,6 @@
+apiVersion: v2
+name: 2048
+appVersion: "1.1"
+description: A Helm chart for 2048 1.1
+version: 0.1.0
+type: application

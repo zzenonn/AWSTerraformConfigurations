@@ -1,0 +1,13 @@
+image:
+  repository: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home
+  tag: "6ce628dbed49b8e7a0c851469e00441cebdf5513"
+deployment:
+  replicaCount: 3
+  memRequest: "64Mi"
+  memLimit: "128Mi"
+  cpuRequest: "100m"
+  cpuLimit: "150m"
+service:
+  type: NodePort
+  port: 80
+  targetPort: 80

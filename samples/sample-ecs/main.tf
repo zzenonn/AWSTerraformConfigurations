@@ -1,6 +1,6 @@
 provider "aws" {
-  profile = "terraform"
   region  = "ap-southeast-1"
+  profile = "terraform"
 }
 
 # resource "aws_codestarconnections_connection" "scm" {

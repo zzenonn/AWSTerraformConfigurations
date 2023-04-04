@@ -1,0 +1,5 @@
+aws-load-balancer-controller:
+  clusterName: "Kubernetes-Test-Dev-Cluster"
+  serviceAccount:
+    create: false
+    name: "aws-load-balancer-controller"
