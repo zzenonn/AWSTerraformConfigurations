@@ -121,7 +121,8 @@ resource "aws_iam_openid_connect_provider" "oidc" {
   url             = aws_eks_cluster.cluster.identity[0].oidc[0].issuer
 }
 
-data "aws_iam_policy_document" "kube_sa_assume_role_policy" {
+# Assume role policy for the ALB controller service account
+data "aws_iam_policy_document" "alb_controller_sa_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     effect  = "Allow"
@@ -145,6 +146,32 @@ data "aws_iam_policy_document" "kube_sa_assume_role_policy" {
   }
 }
 
+# Assume role policy for the gateway controller service account
+data "aws_iam_policy_document" "gateway_controller_sa_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:aws-gateway-controller"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.oidc.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+
 # IAM Policy for the ALB controller service account
 resource "aws_iam_role_policy" "kube_alb_controller" {
   role        = aws_iam_role.kube_alb_controller.id
@@ -152,8 +179,24 @@ resource "aws_iam_role_policy" "kube_alb_controller" {
 }
 
 resource "aws_iam_role" "kube_alb_controller" {
-  assume_role_policy = data.aws_iam_policy_document.kube_sa_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.alb_controller_sa_assume_role_policy.json
   name               = "${local.name_tag_prefix}-Kube-Alb-Controller-Role"
+  tags = {
+    Env     = var.environment
+    Project = var.project_name
+  }
+}
+
+# IAM Policy for the gateway controller service account
+
+resource "aws_iam_role_policy" "kube_gateway_controller" {
+  role        = aws_iam_role.kube_gateway_controller.id
+  policy      = file("${path.module}/gateway-controller.json")
+}
+
+resource "aws_iam_role" "kube_gateway_controller" {
+  assume_role_policy = data.aws_iam_policy_document.gateway_controller_sa_assume_role_policy.json
+  name               = "${local.name_tag_prefix}-Kube-Gateway-Controller-Role"
   tags = {
     Env     = var.environment
     Project = var.project_name

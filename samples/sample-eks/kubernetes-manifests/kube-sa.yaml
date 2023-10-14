@@ -57,6 +57,5 @@ kind: ServiceAccount
 metadata:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::883779074323:role/Kubernetes-Test-Dev-Kube-Alb-Controller-Role
-  creationTimestamp: "2021-04-27T13:03:11Z"
   name: aws-load-balancer-controller
   namespace: kube-system
