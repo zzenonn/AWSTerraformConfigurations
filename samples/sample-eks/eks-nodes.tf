@@ -54,7 +54,7 @@ resource "aws_security_group" "node_group" {
     to_port         = 0
     protocol        = -1
     self            = true
-    description     = "Allow from itseld"
+    description     = "Allow from itself"
   }
   egress {
     from_port   = 0
@@ -69,4 +69,17 @@ resource "aws_security_group" "node_group" {
     Env     = var.environment
     Project = var.project_name
   }
+}
+
+
+resource "aws_security_group_rule" "from_vpc_lattice" {
+  type        = "ingress"
+  from_port   = 0   
+  to_port     = 65535 
+  protocol    = -1
+  description = "Allow traffic from the VPC Lattice fleet"
+
+  security_group_id = aws_security_group.node_group.id
+
+  prefix_list_ids = [data.aws_ec2_managed_prefix_list.vpc_lattice.id]
 }

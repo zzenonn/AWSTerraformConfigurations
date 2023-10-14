@@ -136,7 +136,7 @@ data "aws_iam_policy_document" "alb_controller_sa_assume_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
+      values   = ["system:serviceaccount:aws-load-balancer-controller-system:aws-load-balancer-controller"]
     }
 
     principals {
@@ -161,7 +161,7 @@ data "aws_iam_policy_document" "gateway_controller_sa_assume_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-gateway-controller"]
+      values   = ["system:serviceaccount:aws-application-networking-system:aws-gateway-controller"]
     }
 
     principals {
