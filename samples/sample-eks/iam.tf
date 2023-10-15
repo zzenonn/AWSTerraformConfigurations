@@ -161,7 +161,32 @@ data "aws_iam_policy_document" "gateway_controller_sa_assume_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:aws-application-networking-system:aws-gateway-controller"]
+      values   = ["system:serviceaccount:aws-application-networking-system:gateway-api-controller"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.oidc.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+# IAM Policy for the EBS CSI controller service account
+data "aws_iam_policy_document" "ebs_csi_controller_sa_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
     }
 
     principals {
@@ -201,4 +226,18 @@ resource "aws_iam_role" "kube_gateway_controller" {
     Env     = var.environment
     Project = var.project_name
   }
+}
+
+resource "aws_iam_role" "kube_ebs_csi_controller" {
+  assume_role_policy = data.aws_iam_policy_document.ebs_csi_controller_sa_assume_role_policy.json
+  name               = "${local.name_tag_prefix}-Kube-EBS-CSI-Controller-Role"
+  tags = {
+    Env     = var.environment
+    Project = var.project_name
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ebs_csi_policy_attachment" {
+  role       = aws_iam_role.kube_ebs_csi_controller.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }

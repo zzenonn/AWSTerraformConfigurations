@@ -17,3 +17,25 @@ It is recommended to use vesion 2 of the AWS ALB Controller. It can be installed
 ```
 curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/Kubernetes-Test-Dev-Cluster/;s/{{region_name}}/ap-southeast-1/" | kubectl apply -f -
 ```
+
+## Installing the AWS Gateway Controller
+
+1. Make sure you can authenticate to ECR.
+2. Login to the helm repository `aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws`
+3. Run the following:
+
+```
+helm install gateway-api-controller \           
+   oci://public.ecr.aws/aws-application-networking-k8s/aws-gateway-controller-chart\
+   --version=v0.0.17 \
+   --set=serviceAccount.create=false --namespace aws-application-networking-system
+```
+4. `kubectl apply -f kubernetes-manifests/lattice-gateway-class.yaml`
+
+## Enabling the EBS CSI Addon
+
+For persistent volume claims, EKS versions > 1.23 now need to have the EBS CSI driver enabled.
+
+`eksctl create addon --name aws-ebs-csi-driver --cluster Kubernetes-Test-Dev-Cluster --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role --force`
+
+This assumes the service accounts were created.

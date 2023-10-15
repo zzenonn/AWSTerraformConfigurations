@@ -83,3 +83,12 @@ metadata:
   namespace: aws-application-networking-system
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::883779074323:role/Kubernetes-Test-Dev-Kube-Gateway-Controller-Role"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ebs-csi-controller-sa
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::883779074323:role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role"
+
