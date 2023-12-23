@@ -139,7 +139,7 @@ resource "aws_db_instance" "db" {
   skip_final_snapshot     = var.environment == "Prod" ? false : true
   identifier              = lower("${local.name_tag_prefix}-Db")
   engine                  = var.db_engine
-  name                    = lower("${var.project_name}${var.environment}Db")
+  db_name                    = lower("${var.project_name}${var.environment}Db")
   username                = var.db_user
   password                = data.aws_ssm_parameter.db_password.value
   db_subnet_group_name    = var.db_subnet_group

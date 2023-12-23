@@ -78,7 +78,7 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_eip" "nat" {
   count = length(data.aws_availability_zones.azs.names) > var.networks.nat_gateways ? var.networks.nat_gateways : length(data.aws_availability_zones.azs.names)
-  vpc   = true
+  domain   = "vpc"
   tags = {
     Name    = "${local.name_tag_prefix}-NatIp${count.index + 1}"
     Env     = var.environment

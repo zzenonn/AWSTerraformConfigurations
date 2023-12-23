@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "ap-southeast-1"
-  profile = "terraform"
+  profile = "poc-nuke"
 }
 
 module "network" {
