@@ -335,6 +335,7 @@ resource "aws_codebuild_project" "service" {
 
 resource "aws_codepipeline" "codepipeline" {
   name     = local.name_tag_prefix
+  pipeline_type = "V2"
   role_arn = aws_iam_role.codepipeline.arn
 
   artifact_store {
