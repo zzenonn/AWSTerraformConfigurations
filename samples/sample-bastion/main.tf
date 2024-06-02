@@ -1,6 +1,6 @@
 provider "aws" {
-  profile = "canvas2"
-  region  = "ap-northeast-1"
+  profile = "poc-nuke"
+  region  = "ap-southeast-1"
 }
 
 module "network" {

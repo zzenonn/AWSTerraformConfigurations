@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "ap-southeast-1"
-  profile = "poc-nuke"
+  # profile = "poc-nuke"
 }
 
 module "network" {

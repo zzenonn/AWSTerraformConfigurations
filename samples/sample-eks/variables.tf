@@ -45,12 +45,7 @@ variable "networks" {
     nat_gateways      = 3
   }
   description = "All information regarding network configuration is stored in this object. NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS"
-  #  validation {
-  #    condition     = can(regex("((\\d\\d\\d)\\.){4}/\\d\\d", var.networks.cidr_block))
-  #    error_message = "The cidr block must be a valid cidr."
-  #  }
 }
-
 
 locals {
   name_tag_prefix = "${var.project_name}-${var.environment}"
@@ -58,7 +53,6 @@ locals {
     "Home" = ["/", "/img*"]
     "Cat"  = ["/cats*"]
     "Dog"  = ["/dogs*"]
-
   }
   instance_policies = {
     "SSMPolicy" = <<-EOF
