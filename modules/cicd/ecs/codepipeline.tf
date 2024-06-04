@@ -401,6 +401,7 @@ EOF
       owner           = "AWS"
       provider        = "Manual"
       version = 1
+      run_order = 1
     }
 
     action {
@@ -410,6 +411,7 @@ EOF
       provider        = "CodeDeployToECS"
       input_artifacts = ["${local.name_tag_prefix}-build_output"]
       version         = "1"
+      run_order       = 2
 
       configuration = {
         ApplicationName                = var.codedeploy_app
