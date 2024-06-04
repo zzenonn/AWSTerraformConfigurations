@@ -47,4 +47,13 @@ resource "aws_ecs_service" "services" {
     container_port   = 80
   }
 
+  lifecycle {
+
+    ignore_changes = [
+      task_definition,
+      load_balancer
+    ]
+
+  }
+
 }

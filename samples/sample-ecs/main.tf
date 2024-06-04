@@ -39,7 +39,7 @@ module "cicd" {
   project_name                = module.network.project_name
   environment                 = module.network.environment
   service                     = each.key
-  git_owner                   = "zzenonn"
+  git_owner                   = "novare-technologies/internal/solcon/catdog"
   git_repo                    = lower("${var.project_name}-${each.key}service")
   codestar_connection_arn     = var.codestar_connection_arn
   codedeploy_app              = aws_codedeploy_app.services.name
