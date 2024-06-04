@@ -396,7 +396,6 @@ EOF
     name = "Deploy"
 
     action {
-      for_each = var.environment == "dev" ? [1] : []
       name = "ProdApproval"
       category = "Approval"
       owner           = "AWS"
