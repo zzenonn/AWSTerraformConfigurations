@@ -396,7 +396,7 @@ EOF
     name = "Deploy"
 
     action {
-      name = "ProdApproval"
+      name = "${var.environment}-Approval"
       category = "Approval"
       owner           = "AWS"
       provider        = "Manual"

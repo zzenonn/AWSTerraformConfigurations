@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "ap-southeast-1"
-  profile = "terraform"
+  profile = "solcon-poc"
 }
 
 # resource "aws_codestarconnections_connection" "scm" {
