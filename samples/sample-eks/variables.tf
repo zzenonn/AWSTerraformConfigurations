@@ -22,6 +22,12 @@ variable "codestar_connection_arn" {
   description = "ARN of Codestar connection"
 }
 
+variable "fargate_deployment" {
+  description = "Whether to deploy Fargate"
+  type        = bool
+  default     = false
+}
+
 # NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS
 variable "networks" {
   type = object({

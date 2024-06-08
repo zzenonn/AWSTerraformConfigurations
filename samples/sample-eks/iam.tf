@@ -55,8 +55,8 @@ resource "aws_iam_role" "node_role" {
 }
 
 resource "aws_iam_role_policy" "node_ssm" {
-  role        = aws_iam_role.node_role.id
-  policy      = <<-EOF
+  role   = aws_iam_role.node_role.id
+  policy = <<-EOF
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -199,8 +199,8 @@ data "aws_iam_policy_document" "ebs_csi_controller_sa_assume_role_policy" {
 
 # IAM Policy for the ALB controller service account
 resource "aws_iam_role_policy" "kube_alb_controller" {
-  role        = aws_iam_role.kube_alb_controller.id
-  policy      = file("${path.module}/elb-controller-policy.json")
+  role   = aws_iam_role.kube_alb_controller.id
+  policy = file("${path.module}/elb-controller-policy.json")
 }
 
 resource "aws_iam_role" "kube_alb_controller" {
@@ -215,8 +215,8 @@ resource "aws_iam_role" "kube_alb_controller" {
 # IAM Policy for the gateway controller service account
 
 resource "aws_iam_role_policy" "kube_gateway_controller" {
-  role        = aws_iam_role.kube_gateway_controller.id
-  policy      = file("${path.module}/gateway-controller.json")
+  role   = aws_iam_role.kube_gateway_controller.id
+  policy = file("${path.module}/gateway-controller.json")
 }
 
 resource "aws_iam_role" "kube_gateway_controller" {

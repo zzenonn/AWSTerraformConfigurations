@@ -1,4 +1,5 @@
 resource "aws_eks_node_group" "nodes" {
+  count           = var.fargate_deployment ? 0 : 1
   cluster_name    = aws_eks_cluster.cluster.name
   node_group_name = "${local.name_tag_prefix}-Node-Group"
   node_role_arn   = aws_iam_role.node_role.arn
@@ -26,11 +27,12 @@ resource "aws_eks_node_group" "nodes" {
 }
 
 resource "aws_launch_template" "eks_nodes" {
-  name = "${local.name_tag_prefix}-InstanceTemplate"
+  count = var.fargate_deployment ? 0 : 1
+  name  = "${local.name_tag_prefix}-InstanceTemplate"
 
   network_interfaces {
     associate_public_ip_address = false
-    security_groups             = [aws_security_group.node_group.id]
+    security_groups             = [aws_security_group.node_group[0].id]
     delete_on_termination       = true
   }
 
@@ -45,16 +47,17 @@ resource "aws_launch_template" "eks_nodes" {
 }
 
 resource "aws_security_group" "node_group" {
+  count       = var.fargate_deployment ? 0 : 1
   name        = "${local.name_tag_prefix}-K8s-Nodes-Sg"
   description = "Security group for K8s Nodes"
   vpc_id      = module.network.vpc
 
   ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = -1
-    self            = true
-    description     = "Allow from itself"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    self        = true
+    description = "Allow from itself"
   }
   egress {
     from_port   = 0
@@ -73,13 +76,14 @@ resource "aws_security_group" "node_group" {
 
 
 resource "aws_security_group_rule" "from_vpc_lattice" {
+  count       = var.fargate_deployment ? 0 : 1
   type        = "ingress"
-  from_port   = 0   
-  to_port     = 65535 
+  from_port   = 0
+  to_port     = 65535
   protocol    = -1
   description = "Allow traffic from the VPC Lattice fleet"
 
-  security_group_id = aws_security_group.node_group.id
+  security_group_id = aws_security_group.node_group[0].id
 
   prefix_list_ids = [data.aws_ec2_managed_prefix_list.vpc_lattice.id]
 }
