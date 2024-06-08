@@ -16,6 +16,13 @@ variable "db_port" {
   description = "Port of the database being used"
 }
 
+variable "profile" {
+  type        = string
+  default     = "default"
+  description = "AWS profile to use"
+  
+}
+
 variable "codestar_connection_arn" {
   type        = string
   default     = ""
