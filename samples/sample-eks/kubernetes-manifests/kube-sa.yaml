@@ -91,4 +91,11 @@ metadata:
   namespace: kube-system
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::656336815265:role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role"
-
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ack-apigatewayv2-controller
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::656336815265:role/Kubernetes-Test-Dev-Kube-ACKIAM-Role
