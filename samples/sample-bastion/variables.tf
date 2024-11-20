@@ -4,6 +4,18 @@ variable "project_name" {
   description = "Project name for tagging purposes"
 }
 
+variable "profile" {
+  type        = string
+  default     = "default"
+  description = "AWS profile to use"
+}
+
+variable "region" {
+  type        = string
+  default     = "ap-southeast-1"
+  description = "AWS region to deploy resources"
+}
+
 variable "environment" {
   type        = string
   default     = "Dev"

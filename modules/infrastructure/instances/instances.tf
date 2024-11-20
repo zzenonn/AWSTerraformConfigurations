@@ -128,22 +128,22 @@ resource "aws_instance" "bastion" {
 }
 
 
-resource "aws_db_instance" "db" {
-  allocated_storage       = var.environment == "Prod" ? 100 : 20
-  max_allocated_storage   = var.environment == "Prod" ? 500 : 30
-  backup_retention_period = var.environment == "Prod" ? 30 : 3
-  storage_type            = var.environment == "Prod" ? "io1" : "gp2"
-  iops                    = var.environment == "Prod" ? 10000 : 0
-  instance_class          = var.environment == "Prod" ? "db.t3.large" : "db.t3.micro"
-  multi_az                = var.environment == "Prod" ? true : false
-  skip_final_snapshot     = var.environment == "Prod" ? false : true
-  identifier              = lower("${local.name_tag_prefix}-Db")
-  engine                  = var.db_engine
-  db_name                    = lower("${var.project_name}${var.environment}Db")
-  username                = var.db_user
-  password                = data.aws_ssm_parameter.db_password.value
-  db_subnet_group_name    = var.db_subnet_group
-  vpc_security_group_ids  = [aws_security_group.db.id]
-  storage_encrypted       = true
+# resource "aws_db_instance" "db" {
+#   allocated_storage       = var.environment == "Prod" ? 100 : 20
+#   max_allocated_storage   = var.environment == "Prod" ? 500 : 30
+#   backup_retention_period = var.environment == "Prod" ? 30 : 3
+#   storage_type            = var.environment == "Prod" ? "io1" : "gp2"
+#   iops                    = var.environment == "Prod" ? 10000 : 0
+#   instance_class          = var.environment == "Prod" ? "db.t3.large" : "db.t3.micro"
+#   multi_az                = var.environment == "Prod" ? true : false
+#   skip_final_snapshot     = var.environment == "Prod" ? false : true
+#   identifier              = lower("${local.name_tag_prefix}-Db")
+#   engine                  = var.db_engine
+#   db_name                    = lower("${var.project_name}${var.environment}Db")
+#   username                = var.db_user
+#   password                = data.aws_ssm_parameter.db_password.value
+#   db_subnet_group_name    = var.db_subnet_group
+#   vpc_security_group_ids  = [aws_security_group.db.id]
+#   storage_encrypted       = true
 
-}
+# }

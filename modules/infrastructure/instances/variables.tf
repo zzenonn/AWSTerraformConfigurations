@@ -53,11 +53,7 @@ variable "db_user" {
 }
 
 data "aws_ssm_parameter" "amazon_linux_ami" {
-  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-}
-
-data "aws_ssm_parameter" "db_password" {
-  name = "dbPassword"
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
 }
 
 locals {
