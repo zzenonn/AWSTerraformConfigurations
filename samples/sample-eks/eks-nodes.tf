@@ -4,7 +4,7 @@ resource "aws_eks_node_group" "nodes" {
   node_group_name = "${local.name_tag_prefix}-Node-Group"
   node_role_arn   = aws_iam_role.node_role.arn
   subnet_ids      = module.network.private_subnets
-  instance_types  = ["c5.xlarge"]
+  instance_types  = ["c5.large"]
 
   # launch_template {
   #   id = aws_launch_template.eks_nodes.id

@@ -1,0 +1,5 @@
+roleArns:
+  albController: "arn:aws:iam::656336815265:role/Novare-Demo-K8s-Dev-Kube-Alb-Controller-Role"
+  gatewayController: "arn:aws:iam::656336815265:role/Novare-Demo-K8s-Dev-Kube-Gateway-Controller-Role"
+  ebsCsiController: "arn:aws:iam::656336815265:role/Novare-Demo-K8s-Dev-Kube-EBS-CSI-Controller-Role"
+  adotCollector: "arn:aws:iam::656336815265:role/EKS-Fargate-ADOT-ServiceAccount-Role"

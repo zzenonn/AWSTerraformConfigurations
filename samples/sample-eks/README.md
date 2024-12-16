@@ -4,7 +4,28 @@ This terraform template creates an EKS cluster running on EC2 instances. The kub
 
 ## Using IAM Roles for Service Accounts
 
-This template creates the appropriate OIDC provider to connect the cluster's SA to IAM. To apply the SAs required for the apps, run `kubectl apply -f kubernetes-manifests/kube-sa.yaml`.
+This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balancer Controller, EBS CSI Controller, and Gateway Controller. Follow these steps to configure them:
+
+1. **Retrieve Role ARNs:**
+   - Run the following commands to export the IAM Role ARNs as environment variables:
+
+   ```bash
+   export ALB_CONTROLLER_ARN=$(terraform output -raw kube_alb_controller_role_arn)
+   export GATEWAY_CONTROLLER_ARN=$(terraform output -raw kube_gateway_controller_role_arn)
+   export EBS_CSI_CONTROLLER_ARN=$(terraform output -raw kube_ebs_csi_controller_role_arn)
+   export ADOT_COLLECTOR_ARN=$(terraform output -raw kube_adot_collector_role_arn)
+   ```
+
+2. **Install the Helm Chart:**
+   - Use Helm to install the chart with the retrieved Role ARNs:
+
+   ```bash
+   helm install aws-sa-chart kube-sa-helm-chart \
+    --set roleArns.albController=$ALB_CONTROLLER_ARN \
+    --set roleArns.gatewayController=$GATEWAY_CONTROLLER_ARN \
+    --set roleArns.ebsCsiController=$EBS_CSI_CONTROLLER_ARN \
+    --set roleArns.adotCollector=$ADOT_COLLECTOR_ARN
+   ```
 
 ## Fargate Configuration
 
@@ -33,19 +54,66 @@ It is recommended to use vesion 2 of the AWS ALB Controller. It can be installed
 curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/Kubernetes-Test-Dev-Cluster/;s/{{region_name}}/ap-southeast-1/" | kubectl apply -f -
 ```
 
-## Installing the AWS Gateway Controller
+## Installing the AWS ALB Controller
 
-1. Make sure you can authenticate to ECR.
-2. Login to the helm repository `aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws`
-3. Run the following:
+It is recommended to use version 2 of the AWS ALB Controller. Follow these steps to install it:
 
-```
-helm install gateway-api-controller \           
-   oci://public.ecr.aws/aws-application-networking-k8s/aws-gateway-controller-chart\
-   --version=v0.0.17 \
-   --set=serviceAccount.create=false --namespace aws-application-networking-system
-```
-4. `kubectl apply -f kubernetes-manifests/lattice-gateway-class.yaml`
+1. **Get Cluster Name and Region:**
+
+   ```bash
+   export EKS_CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
+   export REGION=$(terraform output -raw region)
+   export VPC_ID=$(terraform output -raw vpc_id)
+   ```
+
+2. **Add EKS Helm Repository:**
+
+   ```bash
+   helm repo add eks https://aws.github.io/eks-charts
+   ```
+
+3. **Update Kubeconfig:**export EKS_CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
+   export REGION=$(terraform output -raw region)
+   export VPC_ID=$(terraform output -raw vpc_id)
+
+   ```bash
+   aws eks update-kubeconfig --region $REGION --name $EKS_CLUSTER_NAME
+   ```
+
+4. **Install ALB Controller via Helm:**
+
+   ```bash
+   helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+     -n aws-load-balancer-controller-system \
+     --set clusterName=$EKS_CLUSTER_NAME \
+     --set serviceAccount.create=false \
+     --set serviceAccount.name=aws-load-balancer-controller \
+     --set region=$REGION \
+     --set ingressClass=alb \
+     --set vpcId=$VPC_ID
+   ```
+
+5. **Enable Fargate Logging:**
+
+    ```bash
+    helm install eks-fargate-logging ./eks-fargate-logging --set region=$REGION --set logGroupName=<your-log-group-name> 
+    ```
+
+6. **Enable Container Insights:**
+
+    For EC2
+    
+   ```bash
+   curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/$EKS_CLUSTER_NAME/;s/{{region_name}}/$REGION/" | kubectl apply -f -
+   ```
+
+   For Fargate, ensure that the `amazon*` and `fargate*` are part of the Fargate profile selector.
+
+   ```bash
+   curl https://raw.githubusercontent.com/aws-observability/aws-otel-collector/main/deployment-template/eks/otel-fargate-container-insights.yaml | sed "s/YOUR-EKS-CLUSTER-NAME/$EKS_CLUSTER_NAME/;s/region=us-east-1/region=$REGION/" | kubectl apply -f -
+   ```
+
+   
 
 ## Enabling the EBS CSI Addon
 

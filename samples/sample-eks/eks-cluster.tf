@@ -6,7 +6,7 @@ resource "aws_kms_key" "ekscrypt" {
 resource "aws_eks_cluster" "cluster" {
   name     = "${local.name_tag_prefix}-Cluster"
   role_arn = aws_iam_role.cluster_role.arn
-  version  = "1.30"
+  version  = "1.31"
 
   vpc_config {
     subnet_ids = concat(module.network.private_subnets, module.network.public_subnets)
@@ -25,13 +25,5 @@ resource "aws_eks_cluster" "cluster" {
     aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.AmazonEKSVPCResourceController
   ]
-}
-
-output "endpoint" {
-  value = aws_eks_cluster.cluster.endpoint
-}
-
-output "kubeconfig-certificate-authority-data" {
-  value = aws_eks_cluster.cluster.certificate_authority[0].data
 }
 

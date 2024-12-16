@@ -276,3 +276,75 @@ resource "aws_iam_role_policy" "kube_apigw_controller" {
   role   = aws_iam_role.kube_apigw_controller.id
   policy = file("${path.module}/ack-iam-policy.json")
 }
+
+# IAM Role for ADOT Collector
+data "aws_iam_policy_document" "adot_collector_sa_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:fargate-container-insights:adot-collector"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.oidc.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+resource "aws_iam_role" "kube_adot_collector_role" {
+  assume_role_policy = data.aws_iam_policy_document.adot_collector_sa_assume_role_policy.json
+  name               = "${local.name_tag_prefix}-Fargate-ADOT-ServiceAccount-Role"
+}
+
+resource "aws_iam_role_policy_attachment" "adot_collector_policy_attachment" {
+  role       = aws_iam_role.kube_adot_collector_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+# IAM Role for Karpenter
+
+resource "aws_iam_role" "karpenter_role" {
+  name = "${local.name_tag_prefix}-Karpenter-Role"
+
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }]
+    Version = "2012-10-17"
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "karpenter_policy_ecr_attachment" {
+  role       = aws_iam_role.karpenter_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "karpenter_policy_cni_attachment" {
+  role       = aws_iam_role.karpenter_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy_attachment" "karpenter_policy_worker_attachment" {
+  role       = aws_iam_role.karpenter_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "karpenter_policy_ssm_attachment" {
+  role       = aws_iam_role.karpenter_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
