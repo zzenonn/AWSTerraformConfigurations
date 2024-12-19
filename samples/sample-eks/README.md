@@ -172,7 +172,7 @@ Karpenter is a Kubernetes cluster autoscaler that provisions EC2 instances based
 
 3. **Optional: Enable IRSA for Karpenter:**
 
-   If using IRSA, create the service account:
+   Karpenter uses pod identity by default for authorization. Pod identity is automatically configured in this cluster. If using IRSA, create the service account:
 
    ```bash
    eksctl create iamserviceaccount \
