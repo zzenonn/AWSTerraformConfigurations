@@ -14,13 +14,18 @@ This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balance
    export GATEWAY_CONTROLLER_ARN=$(terraform output -raw kube_gateway_controller_role_arn)
    export EBS_CSI_CONTROLLER_ARN=$(terraform output -raw kube_ebs_csi_controller_role_arn)
    export ADOT_COLLECTOR_ARN=$(terraform output -raw kube_adot_collector_role_arn)
+   export EKS_NODE_ROLE_ARN=$(terraform output -raw kube_node_role_arn)
+   export KARPENTER_CONTROLLER_ROLE_ARN=$(terraform output -raw kube_karpenter_controller_role_arn)
+
+   export EKS_NODE_ROLE=$(terraform output -raw kube_node_role_name)
+   export KARPENTER_INTERRUPTION_QUEUE=$(terraform output -raw karpenter_interruption_sqs_queue_name)
    ```
 
 2. **Install the Helm Chart:**
    - Use Helm to install the chart with the retrieved Role ARNs:
 
    ```bash
-   helm install aws-sa-chart kube-sa-helm-chart \
+   helm upgrade --install aws-sa-chart helm-charts/kube-sa-helm-chart \
     --set roleArns.albController=$ALB_CONTROLLER_ARN \
     --set roleArns.gatewayController=$GATEWAY_CONTROLLER_ARN \
     --set roleArns.ebsCsiController=$EBS_CSI_CONTROLLER_ARN \
@@ -42,18 +47,6 @@ kubectl patch deployment coredns \
 kubectl rollout restart -n kube-system deployment coredns
 ```
 
-## Installing the ALB Controller
-
-It is recommended to use vesion 2 of the AWS ALB Controller. It can be installed via Helm chart.
-
-1. Add the eks repo to helm. `helm repo add eks https://aws.github.io/eks-charts`
-2. Update Kube Config `aws eks update-kubeconfig --region ap-southeast-1 --name Kubernetes-Test-Dev-Cluster`
-3. Install the ALB Controller via Helm. The manifest applied earlier already creates the appropriate service account. `helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n aws-load-balancer-controller-system --set clusterName=Kubernetes-Test-Dev-Cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=ap-southeast-1 --set vpcId=<vpc-id> --set ingressClass=alb` 
-4. Enable Container Insights
-```
-curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/Kubernetes-Test-Dev-Cluster/;s/{{region_name}}/ap-southeast-1/" | kubectl apply -f -
-```
-
 ## Installing the AWS ALB Controller
 
 It is recommended to use version 2 of the AWS ALB Controller. Follow these steps to install it:
@@ -72,9 +65,7 @@ It is recommended to use version 2 of the AWS ALB Controller. Follow these steps
    helm repo add eks https://aws.github.io/eks-charts
    ```
 
-3. **Update Kubeconfig:**export EKS_CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
-   export REGION=$(terraform output -raw region)
-   export VPC_ID=$(terraform output -raw vpc_id)
+3. **Update Kubeconfig:**
 
    ```bash
    aws eks update-kubeconfig --region $REGION --name $EKS_CLUSTER_NAME
@@ -122,3 +113,35 @@ For persistent volume claims, EKS versions > 1.23 now need to have the EBS CSI d
 `eksctl create addon --name aws-ebs-csi-driver --cluster Kubernetes-Test-Dev-Cluster --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role --force`
 
 This assumes the service accounts were created.
+
+
+helm upgrade --install karpenter oci://public.ecr.aws/karpenter/karpenter \
+  --version "${KARPENTER_VERSION}" \
+  --namespace "karpenter" --create-namespace \
+  --set "settings.clusterName=${EKS_CLUSTER_NAME}" \
+  --set "settings.interruptionQueue=${KARPENTER_INTERRUPTION_QUEUE}" \
+  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${KARPENTER_IAM_ROLE_ARN} \
+  --set controller.resources.requests.cpu=1 \
+  --set controller.resources.requests.memory=1Gi \
+  --set controller.resources.limits.cpu=1 \
+  --set controller.resources.limits.memory=1Gi \
+  --set replicas=1 \
+  --wait
+
+Identity MAP for 
+
+eksctl create iamidentitymapping \
+  --username system:node:{{EC2PrivateDNSName}} \
+  --cluster "$EKS_CLUSTER_NAME" \
+  --arn "$KARPENTER_NODE_IAM_ROLE_ARN" \
+  --group system:bootstrappers \
+  --group system:nodes
+
+  eksctl create iamserviceaccount \
+  --name karpenter \
+  --namespace "${KARPENTER_NAMESPACE}" \
+  --cluster "${EKS_CLUSTER_NAME}" \
+  --role-name "${EKS_CLUSTER_NAME}-karpenter" \
+  --attach-policy-arn "arn:${AWS_PARTITION}:iam::${AWS_ACCOUNT_ID}:policy/KarpenterControllerPolicy-${EKS_CLUSTER_NAME}" \
+  --approve \
+  --override-existing-serviceaccounts

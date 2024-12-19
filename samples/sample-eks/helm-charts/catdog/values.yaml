@@ -1,5 +1,20 @@
-aws-load-balancer-controller:
-  clusterName: "Kubernetes-Test-Dev-Cluster"
-  serviceAccount:
-    create: false
-    name: "aws-load-balancer-controller"
+# aws-load-balancer-controller:
+#   clusterName: "Kubernetes-Test-Dev-Cluster"
+#   serviceAccount:
+#     create: false
+#     name: "aws-load-balancer-controller"
+
+cat:
+  image:
+    repository: XXX.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat
+    tag: v1.0.0
+
+dog:
+  image:
+    repository: XXX.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog
+    tag: v1.2.0
+
+home:
+  image:
+    repository: XXX.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home
+    tag: v2.0.0

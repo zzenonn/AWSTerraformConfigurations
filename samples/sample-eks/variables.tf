@@ -41,6 +41,30 @@ variable "fargate_deployment" {
   default     = false
 }
 
+variable "karpenter_namespace" {
+  description = "Namespace for Karpenter"
+  type        = string
+  default     = "karpenter"
+}
+
+variable "karpenter_service_account_name" {
+  description = "Service account name for Karpenter"
+  type        = string
+  default     = "karpenter"
+}
+
+variable "aws_lb_controller_namespace" {
+  description = "Namespace for AWS LB Controller"
+  type        = string
+  default     = "aws-load-balancer-controller-system"
+}
+
+variable "aws_lb_controller_service_account_name" {
+  description = "Service account name for Karpenter"
+  type        = string
+  default     = "aws-load-balancer-controller"
+}
+
 # NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS
 variable "networks" {
   type = object({
@@ -130,6 +154,9 @@ locals {
   }
 
 }
+
+# aws_caller_identity
+data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
