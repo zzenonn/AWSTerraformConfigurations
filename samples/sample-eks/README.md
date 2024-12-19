@@ -1,13 +1,24 @@
 # Sample EKS Cluster
 
-This terraform template creates an EKS cluster running on EC2 instances. The kubernetes-manifests directory contains sample manifests to deploy into the cluster.
+This Terraform template creates an EKS cluster running on EC2 instances. The `kubernetes-manifests` directory contains sample manifests to deploy into the cluster.
+
+---
+
+## Table of Contents
+1. [Using IAM Roles for Service Accounts](#using-iam-roles-for-service-accounts)
+2. [Fargate Configuration](#fargate-configuration)
+3. [Installing the AWS ALB Controller](#installing-the-aws-alb-controller)
+4. [Enabling the EBS CSI Addon](#enabling-the-ebs-csi-addon)
+5. [Karpenter](#karpenter)
+
+---
 
 ## Using IAM Roles for Service Accounts
 
-This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balancer Controller, EBS CSI Controller, and Gateway Controller. Follow these steps to configure them:
+This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balancer Controller, EBS CSI Controller, Gateway Controller, and other components. Follow these steps to configure them:
 
 1. **Retrieve Role ARNs:**
-   - Run the following commands to export the IAM Role ARNs as environment variables:
+   Export the IAM Role ARNs as environment variables:
 
    ```bash
    export ALB_CONTROLLER_ARN=$(terraform output -raw kube_alb_controller_role_arn)
@@ -22,7 +33,7 @@ This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balance
    ```
 
 2. **Install the Helm Chart:**
-   - Use Helm to install the chart with the retrieved Role ARNs:
+   Use Helm to install the chart with the retrieved Role ARNs:
 
    ```bash
    helm upgrade --install aws-sa-chart helm-charts/kube-sa-helm-chart \
@@ -32,26 +43,30 @@ This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balance
     --set roleArns.adotCollector=$ADOT_COLLECTOR_ARN
    ```
 
+---
+
 ## Fargate Configuration
 
-When using fargate, the coredns deployments need to be re-annotated and rolled out.
+When using Fargate, the CoreDNS deployments need to be re-annotated and rolled out:
 
-```
+```bash
 kubectl patch deployment coredns \
     -n kube-system \
     --type json \
     -p='[{"op": "remove", "path": "/spec/template/metadata/annotations/eks.amazonaws.com~1compute-type"}]'
 ```
 
-```
+```bash
 kubectl rollout restart -n kube-system deployment coredns
 ```
 
+---
+
 ## Installing the AWS ALB Controller
 
-It is recommended to use version 2 of the AWS ALB Controller. Follow these steps to install it:
+To install version 2 of the AWS ALB Controller, follow these steps:
 
-1. **Get Cluster Name and Region:**
+1. **Export Cluster Name and Region:**
 
    ```bash
    export EKS_CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
@@ -59,7 +74,7 @@ It is recommended to use version 2 of the AWS ALB Controller. Follow these steps
    export VPC_ID=$(terraform output -raw vpc_id)
    ```
 
-2. **Add EKS Helm Repository:**
+2. **Add the EKS Helm Repository:**
 
    ```bash
    helm repo add eks https://aws.github.io/eks-charts
@@ -71,7 +86,7 @@ It is recommended to use version 2 of the AWS ALB Controller. Follow these steps
    aws eks update-kubeconfig --region $REGION --name $EKS_CLUSTER_NAME
    ```
 
-4. **Install ALB Controller via Helm:**
+4. **Install the ALB Controller:**
 
    ```bash
    helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
@@ -86,62 +101,86 @@ It is recommended to use version 2 of the AWS ALB Controller. Follow these steps
 
 5. **Enable Fargate Logging:**
 
-    ```bash
-    helm install eks-fargate-logging ./eks-fargate-logging --set region=$REGION --set logGroupName=<your-log-group-name> 
-    ```
+   ```bash
+   helm install eks-fargate-logging ./eks-fargate-logging --set region=$REGION --set logGroupName=<your-log-group-name> 
+   ```
 
 6. **Enable Container Insights:**
 
-    For EC2
-    
-   ```bash
-   curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/$EKS_CLUSTER_NAME/;s/{{region_name}}/$REGION/" | kubectl apply -f -
-   ```
+   - For EC2:
 
-   For Fargate, ensure that the `amazon*` and `fargate*` are part of the Fargate profile selector.
+     ```bash
+     curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/$EKS_CLUSTER_NAME/;s/{{region_name}}/$REGION/" | kubectl apply -f -
+     ```
 
-   ```bash
-   curl https://raw.githubusercontent.com/aws-observability/aws-otel-collector/main/deployment-template/eks/otel-fargate-container-insights.yaml | sed "s/YOUR-EKS-CLUSTER-NAME/$EKS_CLUSTER_NAME/;s/region=us-east-1/region=$REGION/" | kubectl apply -f -
-   ```
+   - For Fargate:
 
-   
+     ```bash
+     curl https://raw.githubusercontent.com/aws-observability/aws-otel-collector/main/deployment-template/eks/otel-fargate-container-insights.yaml | sed "s/YOUR-EKS-CLUSTER-NAME/$EKS_CLUSTER_NAME/;s/region=us-east-1/region=$REGION/" | kubectl apply -f -
+     ```
+
+---
 
 ## Enabling the EBS CSI Addon
 
-For persistent volume claims, EKS versions > 1.23 now need to have the EBS CSI driver enabled.
+EKS versions > 1.23 require the EBS CSI driver for persistent volume claims. Enable the addon using the following command:
 
-`eksctl create addon --name aws-ebs-csi-driver --cluster Kubernetes-Test-Dev-Cluster --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role --force`
+```bash
+eksctl create addon \
+  --name aws-ebs-csi-driver \
+  --cluster Kubernetes-Test-Dev-Cluster \
+  --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role \
+  --force
+```
 
 This assumes the service accounts were created.
 
+---
 
-helm upgrade --install karpenter oci://public.ecr.aws/karpenter/karpenter \
-  --version "${KARPENTER_VERSION}" \
-  --namespace "karpenter" --create-namespace \
-  --set "settings.clusterName=${EKS_CLUSTER_NAME}" \
-  --set "settings.interruptionQueue=${KARPENTER_INTERRUPTION_QUEUE}" \
-  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${KARPENTER_IAM_ROLE_ARN} \
-  --set controller.resources.requests.cpu=1 \
-  --set controller.resources.requests.memory=1Gi \
-  --set controller.resources.limits.cpu=1 \
-  --set controller.resources.limits.memory=1Gi \
-  --set replicas=1 \
-  --wait
+## Karpenter
 
-Identity MAP for 
+Karpenter is a Kubernetes cluster autoscaler that provisions EC2 instances based on workload requirements. Follow these steps to configure and install Karpenter:
 
-eksctl create iamidentitymapping \
-  --username system:node:{{EC2PrivateDNSName}} \
-  --cluster "$EKS_CLUSTER_NAME" \
-  --arn "$KARPENTER_NODE_IAM_ROLE_ARN" \
-  --group system:bootstrappers \
-  --group system:nodes
+1. **Identity Mapping for Nodes:**
 
-  eksctl create iamserviceaccount \
-  --name karpenter \
-  --namespace "${KARPENTER_NAMESPACE}" \
-  --cluster "${EKS_CLUSTER_NAME}" \
-  --role-name "${EKS_CLUSTER_NAME}-karpenter" \
-  --attach-policy-arn "arn:${AWS_PARTITION}:iam::${AWS_ACCOUNT_ID}:policy/KarpenterControllerPolicy-${EKS_CLUSTER_NAME}" \
-  --approve \
-  --override-existing-serviceaccounts
+   Allow nodes to log in to the cluster:
+
+   ```bash
+   eksctl create iamidentitymapping \
+     --username system:node:{{EC2PrivateDNSName}} \
+     --cluster "$EKS_CLUSTER_NAME" \
+     --arn "$KARPENTER_NODE_IAM_ROLE_ARN" \
+     --group system:bootstrappers \
+     --group system:nodes
+   ```
+
+2. **Install Karpenter via Helm:**
+
+   ```bash
+   helm upgrade --install karpenter oci://public.ecr.aws/karpenter/karpenter \
+     --version "${KARPENTER_VERSION}" \
+     --namespace "karpenter" --create-namespace \
+     --set "settings.clusterName=${EKS_CLUSTER_NAME}" \
+     --set "settings.interruptionQueue=${KARPENTER_INTERRUPTION_QUEUE}" \
+     --set controller.resources.requests.cpu=1 \
+     --set controller.resources.requests.memory=1Gi \
+     --set controller.resources.limits.cpu=1 \
+     --set controller.resources.limits.memory=1Gi \
+     --set replicas=1 \
+     --wait
+   ```
+
+3. **Optional: Enable IRSA for Karpenter:**
+
+   If using IRSA, create the service account:
+
+   ```bash
+   eksctl create iamserviceaccount \
+     --name karpenter \
+     --namespace "${KARPENTER_NAMESPACE}" \
+     --cluster "${EKS_CLUSTER_NAME}" \
+     --role-name "${EKS_CLUSTER_NAME}-karpenter" \
+     --attach-policy-arn "arn:${AWS_PARTITION}:iam::${AWS_ACCOUNT_ID}:policy/KarpenterControllerPolicy-${EKS_CLUSTER_NAME}" \
+     --approve \
+     --override-existing-serviceaccounts
+   ```
