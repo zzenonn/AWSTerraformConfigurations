@@ -1,0 +1,5 @@
+apiVersion: v2
+name: aws-sa-chart
+description: A Helm chart to create service accounts for various AWS connectors
+version: 0.1.0
+appVersion: "1.0"

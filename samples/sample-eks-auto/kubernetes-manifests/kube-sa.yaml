@@ -1,0 +1,101 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aws-application-networking-system
+  labels:
+    name: aws-application-networking-system
+    control-plane: gateway-api-controller
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aws-load-balancer-controller-system
+  labels:
+    name: aws-load-balancer-controller-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: aws-load-balancer-controller
+  name: aws-load-balancer-controller
+rules:
+  - apiGroups:
+      - ""
+      - extensions
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - ingresses
+      - ingresses/status
+      - services
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - watch
+      - patch
+  - apiGroups:
+      - ""
+      - extensions
+    resources:
+      - nodes
+      - pods
+      - secrets
+      - services
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: aws-load-balancer-controller
+  name: aws-load-balancer-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aws-load-balancer-controller
+subjects:
+  - kind: ServiceAccount
+    name: aws-load-balancer-controller
+    namespace: aws-load-balancer-controller-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::656336815265:role/Kubernetes-Test-Dev-Kube-Alb-Controller-Role
+  name: aws-load-balancer-controller
+  namespace: aws-load-balancer-controller-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gateway-api-controller
+  namespace: aws-application-networking-system
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::656336815265:role/Kubernetes-Test-Dev-Kube-Gateway-Controller-Role"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ebs-csi-controller-sa
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::656336815265:role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role"
+# ---
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: ack-apigatewayv2-controller
+#   namespace: kube-system
+#   annotations:
+#     eks.amazonaws.com/role-arn: arn:aws:iam::656336815265:role/Kubernetes-Test-Dev-Kube-ACKIAM-Role

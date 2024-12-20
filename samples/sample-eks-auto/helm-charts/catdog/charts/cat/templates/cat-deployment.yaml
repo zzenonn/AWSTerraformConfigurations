@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}-deployment
+  labels:
+    app.kubernetes.io/name: {{ include "service.fullname" . }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "service.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "service.fullname" . }}
+    spec:
+      containers:
+      - name: {{ include "service.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.deployment.memRequest }}
+            cpu: {{ .Values.deployment.cpuRequest }}
+          limits:
+            memory: {{ .Values.deployment.memLimit }}
+            cpu: {{ .Values.deployment.cpuLimit }}
+        ports:
+        - containerPort: {{ .Values.service.port }}

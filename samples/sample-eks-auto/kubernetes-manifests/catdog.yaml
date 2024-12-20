@@ -1,0 +1,185 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-homepage
+  labels:
+    app.kubernetes.io/name: homepage
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: homepage
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: homepage
+    spec:
+      containers:
+      - name: homepage
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:6ce628dbed49b8e7a0c851469e00441cebdf5513
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        ports:
+        - containerPort: 80
+  
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-homepage
+  labels:
+    app.kubernetes.io/name: homepage
+spec:
+  selector:
+    app.kubernetes.io/name: homepage
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  type: NodePort
+---
+# Cat service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-cat
+  labels:
+    app.kubernetes.io/name: cat-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cat-page
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cat-page
+    spec:
+      containers:
+      - name: cat
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:6e279cd7642978bdda647eb9e4349968d698f305
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-cat
+  labels:
+    app.kubernetes.io/name: cat-page
+spec:
+  selector:
+    app.kubernetes.io/name: cat-page
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  type: NodePort
+---
+# Dog service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-dog
+  labels:
+    app.kubernetes.io/name: dog-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dog-page
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dog-page
+    spec:
+      containers:
+      - name: dog
+        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:49432dc056742fc05ee6e23952aed0d8fc9c95cb
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-dog
+  labels:
+    app.kubernetes.io/name: dog-page
+spec:
+  selector:
+    app.kubernetes.io/name: dog-page
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: aws-alb-ingress-class
+spec:
+  controller: ingress.k8s.aws/alb
+---
+# Ingress for all services
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-catdog
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: aws-alb-ingress-class
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Exact
+          backend:
+            service:
+              name: service-homepage
+              port:
+                number: 80
+        - path: /img
+          pathType: Prefix
+          backend:
+            service:
+              name: service-homepage
+              port:
+                number: 80
+        - path: /dogs
+          pathType: Prefix
+          backend:
+            service:
+              name: service-dog
+              port:
+                number: 80
+        - path: /cats
+          pathType: Prefix
+          backend:
+            service:
+              name: service-cat
+              port:
+                number: 80

@@ -1,0 +1,41 @@
+# Ingress for all services
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-catdog-helm
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: aws-alb-ingress-class
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Exact
+          backend:
+            service:
+              name: {{ include "service.fullname" .Subcharts.home }}-service
+              port:
+                number: 80
+        - path: /img
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "service.fullname" .Subcharts.home }}-service
+              port:
+                number: 80
+        - path: /dogs
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "service.fullname" .Subcharts.dog }}-service
+              port:
+                number: 80
+        - path: /cats
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "service.fullname" .Subcharts.cat }}-service
+              port:
+                number: 80
