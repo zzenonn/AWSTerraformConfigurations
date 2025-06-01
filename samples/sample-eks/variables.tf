@@ -83,7 +83,7 @@ variable "networks" {
     private_subnets   = 3
     db_subnets        = 3
     private_cidr_bits = 8
-    public_cidr_bits  = 8
+    public_cidr_bits  = 9
     db_cidr_bits      = 8
     nat_gateways      = 3
   }

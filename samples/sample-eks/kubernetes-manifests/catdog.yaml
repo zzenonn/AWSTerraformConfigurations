@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: homepage
-        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:6ce628dbed49b8e7a0c851469e00441cebdf5513
+        image: 495599738034.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/home:b18660dbc41f6d497897e776ad4424fdf3c1e2b9
         resources:
           requests:
             memory: "64Mi"
@@ -64,7 +64,7 @@ spec:
     spec:
       containers:
       - name: cat
-        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:6e279cd7642978bdda647eb9e4349968d698f305
+        image: 495599738034.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/cat:951c1ba8e6a0572d44f42d9b1b58179b5adcc5e9
         resources:
           requests:
             memory: "64Mi"
@@ -109,7 +109,7 @@ spec:
     spec:
       containers:
       - name: dog
-        image: 883779074323.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:49432dc056742fc05ee6e23952aed0d8fc9c95cb
+        image: 495599738034.dkr.ecr.ap-southeast-1.amazonaws.com/catdog/dog:bcdc47b2c2cead00b3cbc02ea2c4812837dca6d7
         resources:
           requests:
             memory: "64Mi"

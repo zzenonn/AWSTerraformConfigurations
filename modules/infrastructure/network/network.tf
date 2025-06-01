@@ -117,8 +117,7 @@ resource "aws_subnet" "private" {
   count  = var.networks.private_subnets
   vpc_id = aws_vpc.vpc.id
   # Starts from the last subnet in the public subnet. Sets up variable length subnetting
-  cidr_block = (var.networks.private_cidr_bits < var.networks.db_cidr_bits ||
-    var.networks.private_cidr_bits == var.networks.db_cidr_bits ?
+  cidr_block = (var.networks.private_cidr_bits <= var.networks.db_cidr_bits ?
     (cidrsubnet(var.networks.cidr_block,
       var.networks.private_cidr_bits,
       count.index)
@@ -149,8 +148,7 @@ resource "aws_subnet" "db" {
   count  = var.networks.db_subnets
   vpc_id = aws_vpc.vpc.id
   # Starts from the last subnet in the public subnet. Sets up variable length subnetting
-  cidr_block = (var.networks.db_cidr_bits < var.networks.private_cidr_bits ||
-    var.networks.private_cidr_bits == var.networks.db_cidr_bits ?
+  cidr_block = (var.networks.db_cidr_bits < var.networks.private_cidr_bits ?
     (cidrsubnet(var.networks.cidr_block,
       var.networks.db_cidr_bits,
       count.index)
