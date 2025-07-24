@@ -128,8 +128,8 @@ EKS versions > 1.23 require the EBS CSI driver for persistent volume claims. Ena
 ```bash
 eksctl create addon \
   --name aws-ebs-csi-driver \
-  --cluster Kubernetes-Test-Dev-Cluster \
-  --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/Kubernetes-Test-Dev-Kube-EBS-CSI-Controller-Role \
+  --cluster $EKS_CLUSTER_NAME \
+  --service-account-role-arn $EBS_CSI_CONTROLLER_ARN \
   --force
 ```
 

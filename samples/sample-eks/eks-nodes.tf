@@ -4,7 +4,8 @@ resource "aws_eks_node_group" "nodes" {
   node_group_name = "${local.name_tag_prefix}-Node-Group"
   node_role_arn   = aws_iam_role.node_role.arn
   subnet_ids      = module.network.private_subnets
-  instance_types  = ["c5.large"]
+  instance_types  = ["c5.xlarge"]
+  disk_size = 200
 
   # launch_template {
   #   id = aws_launch_template.eks_nodes.id
@@ -12,9 +13,9 @@ resource "aws_eks_node_group" "nodes" {
   # }
 
   scaling_config {
-    desired_size = 2
+    desired_size = 5
     max_size     = 5
-    min_size     = 2
+    min_size     = 0
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
