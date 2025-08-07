@@ -135,6 +135,13 @@ eksctl create addon \
 
 This assumes the service accounts were created.
 
+
+Run the following to create the gp3 storageclass and set it as default.
+
+```
+kubectl apply -f ./kubernetes-manifests/gp3-storageclass.yaml
+```
+
 ---
 
 ## Karpenter

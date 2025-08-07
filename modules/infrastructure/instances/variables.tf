@@ -52,6 +52,16 @@ variable "db_user" {
   description = "Superuser username"
 }
 
+variable "bastion_user_data" {
+  type        = string
+  default     = <<-EOF
+    #!/bin/bash
+    amazon-linux-extras install postgresql11 vim epel -y
+    yum install -y postgresql-server postgresql-devel
+    EOF
+  description = "User data script for bastion host"
+}
+
 data "aws_ssm_parameter" "amazon_linux_ami" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
 }
