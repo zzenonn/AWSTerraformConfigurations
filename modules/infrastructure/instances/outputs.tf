@@ -9,3 +9,7 @@ output "bastion_id" {
 output "ssm_role" {
   value = aws_iam_role.ssm_role.arn
 }
+
+output "bastion_security_group_id" {
+  value = aws_security_group.bastion.id
+}
