@@ -139,8 +139,10 @@ apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:
   name: aws-alb-ingress-class
+  labels:
+    app.kubernetes.io/name: LoadBalancerController
 spec:
-  controller: ingress.k8s.aws/alb
+  controller: eks.amazonaws.com/alb
 ---
 # Ingress for all services
 apiVersion: networking.k8s.io/v1
