@@ -62,6 +62,12 @@ variable "bastion_user_data" {
   description = "User data script for bastion host"
 }
 
+variable "bastion_instance_type" {
+  type        = string
+  default     = "t3.micro"
+  description = "EC2 instance type for bastion host"
+}
+
 data "aws_ssm_parameter" "amazon_linux_ami" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
 }

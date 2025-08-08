@@ -112,7 +112,7 @@ resource "aws_iam_instance_profile" "bastion_profile" {
 resource "aws_instance" "bastion" {
   ami                    = data.aws_ssm_parameter.amazon_linux_ami.value
   subnet_id              = var.private_subnets[0]
-  instance_type          = "t3.micro"
+  instance_type          = var.bastion_instance_type
   iam_instance_profile   = aws_iam_instance_profile.bastion_profile.name
   vpc_security_group_ids = [aws_security_group.bastion.id]
   user_data              = var.bastion_user_data
