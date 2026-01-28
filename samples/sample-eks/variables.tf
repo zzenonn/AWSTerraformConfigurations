@@ -65,6 +65,63 @@ variable "aws_lb_controller_service_account_name" {
   default     = "aws-load-balancer-controller"
 }
 
+variable "eks_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.33"
+}
+
+variable "node_instance_types" {
+  description = "Instance types for EKS node group"
+  type        = list(string)
+  default     = ["c5.xlarge"]
+}
+
+variable "node_disk_size" {
+  description = "Disk size in GB for EKS nodes"
+  type        = number
+  default     = 200
+}
+
+variable "node_desired_size" {
+  description = "Desired number of nodes in the node group"
+  type        = number
+  default     = 5
+}
+
+variable "node_max_size" {
+  description = "Maximum number of nodes in the node group"
+  type        = number
+  default     = 5
+}
+
+variable "node_min_size" {
+  description = "Minimum number of nodes in the node group"
+  type        = number
+  default     = 0
+}
+
+variable "kms_deletion_window" {
+  description = "KMS key deletion window in days"
+  type        = number
+  default     = 10
+}
+
+variable "default_tags" {
+  description = "Default tags to apply to all resources"
+  type        = map(string)
+  default = {
+    auto-delete = "no"
+    auto-stop   = "no"
+  }
+}
+
+variable "karpenter_sqs_message_retention" {
+  description = "Message retention period in seconds for Karpenter interruption queue"
+  type        = number
+  default     = 300
+}
+
 # NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS
 variable "networks" {
   type = object({

@@ -1,12 +1,12 @@
 resource "aws_kms_key" "ekscrypt" {
   description             = "KMS key for EKS Cluster"
-  deletion_window_in_days = 10
+  deletion_window_in_days = var.kms_deletion_window
 }
 
 resource "aws_eks_cluster" "cluster" {
   name     = "${local.name_tag_prefix}-Cluster"
   role_arn = aws_iam_role.cluster_role.arn
-  version  = "1.33"
+  version  = var.eks_version
 
   vpc_config {
     subnet_ids = concat(module.network.private_subnets, module.network.public_subnets)

@@ -1,6 +1,6 @@
 resource "aws_sqs_queue" "karpenter_interruption_queue" {
   name                      = "${local.name_tag_prefix}-Cluster-Interruption-Queue"
-  message_retention_seconds = 300
+  message_retention_seconds = var.karpenter_sqs_message_retention
   sqs_managed_sse_enabled   = true
 }
 

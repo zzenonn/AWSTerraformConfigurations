@@ -2,10 +2,7 @@ provider "aws" {
   region  = var.region
   profile = var.profile
   default_tags {
-    tags = {
-      auto-delete = "no",
-      auto-stop = "no"
-    }
+    tags = var.default_tags
   }
 }
 

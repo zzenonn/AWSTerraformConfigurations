@@ -1,14 +1,14 @@
 resource "aws_kms_key" "ekscrypt" {
   description             = "KMS key for EKS Cluster"
-  deletion_window_in_days = 10
+  deletion_window_in_days = var.kms_deletion_window
 }
 
 resource "aws_eks_cluster" "cluster" {
   name     = "${local.name_tag_prefix}-Cluster"
   role_arn = aws_iam_role.cluster_role.arn
-  version  = "1.31"
+  version  = var.eks_version
 
-  bootstrap_self_managed_addons = false
+  bootstrap_self_managed_addons = var.bootstrap_self_managed_addons
 
   vpc_config {
     subnet_ids = concat(module.network.private_subnets, module.network.public_subnets)
@@ -28,7 +28,7 @@ resource "aws_eks_cluster" "cluster" {
 
   compute_config {
     enabled       = true
-    node_pools    = ["general-purpose", "system"]
+    node_pools    = var.compute_node_pools
     node_role_arn = aws_iam_role.node_role.arn
   }
 

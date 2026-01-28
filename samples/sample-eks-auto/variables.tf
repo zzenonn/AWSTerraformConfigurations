@@ -35,6 +35,30 @@ variable "codestar_connection_arn" {
   description = "ARN of Codestar connection"
 }
 
+variable "eks_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.31"
+}
+
+variable "kms_deletion_window" {
+  description = "KMS key deletion window in days"
+  type        = number
+  default     = 10
+}
+
+variable "bootstrap_self_managed_addons" {
+  description = "Whether to bootstrap self-managed addons"
+  type        = bool
+  default     = false
+}
+
+variable "compute_node_pools" {
+  description = "List of node pools for EKS Auto Mode compute configuration"
+  type        = list(string)
+  default     = ["general-purpose", "system"]
+}
+
 # NOTE: THERE IS AN ASSUMPTION THAT PUBLIC SUBNETS ARE SMALLER THAN ALL OTHERS
 variable "networks" {
   type = object({

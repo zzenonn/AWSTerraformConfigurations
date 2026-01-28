@@ -1,15 +1,83 @@
 # Sample EKS Cluster
 
-This Terraform template creates an EKS cluster running on EC2 instances. The `kubernetes-manifests` directory contains sample manifests to deploy into the cluster.
+This Terraform template creates an EKS cluster running on EC2 instances or Fargate. The `kubernetes-manifests` directory contains sample manifests to deploy into the cluster.
 
 ---
 
 ## Table of Contents
-1. [Using IAM Roles for Service Accounts](#using-iam-roles-for-service-accounts)
-2. [Fargate Configuration](#fargate-configuration)
-3. [Installing the AWS ALB Controller](#installing-the-aws-alb-controller)
-4. [Enabling the EBS CSI Addon](#enabling-the-ebs-csi-addon)
-5. [Karpenter](#karpenter)
+1. [Parameters](#parameters)
+2. [Using IAM Roles for Service Accounts](#using-iam-roles-for-service-accounts)
+3. [Fargate Configuration](#fargate-configuration)
+4. [Installing the AWS ALB Controller](#installing-the-aws-alb-controller)
+5. [Enabling the EBS CSI Addon](#enabling-the-ebs-csi-addon)
+6. [Karpenter](#karpenter)
+7. [Important Notes](#important-notes)
+
+---
+
+## Parameters
+
+### Core Configuration
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `project_name` | string | `"Demo"` | Project name for tagging purposes |
+| `environment` | string | `"Dev"` | Environment name for tagging purposes |
+| `region` | string | `"ap-southeast-1"` | AWS region to deploy resources |
+| `profile` | string | `"default"` | AWS profile to use |
+
+### EKS Cluster Configuration
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `eks_version` | string | `"1.33"` | Kubernetes version for the EKS cluster |
+| `fargate_deployment` | bool | `false` | Whether to deploy Fargate profiles instead of EC2 node groups |
+| `kms_deletion_window` | number | `10` | KMS key deletion window in days |
+
+### Node Group Configuration (EC2 only)
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `node_instance_types` | list(string) | `["c5.xlarge"]` | Instance types for EKS node group |
+| `node_disk_size` | number | `200` | Disk size in GB for EKS nodes |
+| `node_desired_size` | number | `5` | Desired number of nodes in the node group |
+| `node_max_size` | number | `5` | Maximum number of nodes in the node group |
+| `node_min_size` | number | `0` | Minimum number of nodes in the node group |
+
+### Karpenter Configuration
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `karpenter_namespace` | string | `"karpenter"` | Namespace for Karpenter |
+| `karpenter_service_account_name` | string | `"karpenter"` | Service account name for Karpenter |
+| `karpenter_sqs_message_retention` | number | `300` | Message retention period in seconds for Karpenter interruption queue |
+
+### AWS Load Balancer Controller Configuration
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `aws_lb_controller_namespace` | string | `"aws-load-balancer-controller-system"` | Namespace for AWS LB Controller |
+| `aws_lb_controller_service_account_name` | string | `"aws-load-balancer-controller"` | Service account name for AWS LB Controller |
+
+### Network Configuration
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `networks` | object | See below | Network configuration object |
+| `db_port` | number | `5432` | Port of the database being used |
+
+**Default Network Configuration:**
+```hcl
+{
+  cidr_block        = "10.0.0.0/16"
+  public_subnets    = 3
+  private_subnets   = 3
+  db_subnets        = 3
+  private_cidr_bits = 8
+  public_cidr_bits  = 9
+  db_cidr_bits      = 8
+  nat_gateways      = 3
+}
+```
+
+### Tagging Configuration
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `default_tags` | map(string) | `{ auto-delete = "no", auto-stop = "no" }` | Default tags to apply to all resources |
 
 ---
 
@@ -47,7 +115,7 @@ This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balance
 
 ## Fargate Configuration
 
-When using Fargate, the CoreDNS deployments need to be re-annotated and rolled out:
+Set `fargate_deployment = true` to deploy the cluster with Fargate profiles instead of EC2 node groups. When using Fargate, the CoreDNS deployments need to be re-annotated and rolled out:
 
 ```bash
 kubectl patch deployment coredns \
@@ -191,3 +259,25 @@ Karpenter is a Kubernetes cluster autoscaler that provisions EC2 instances based
      --approve \
      --override-existing-serviceaccounts
    ```
+
+---
+
+## Important Notes
+
+### IAM Service Account Namespaces and Names
+
+The IAM roles for service accounts (IRSA) in this configuration use **hardcoded namespace and service account names** in their trust policies. This is **by design** to ensure proper security boundaries and prevent unauthorized access.
+
+The following service accounts have hardcoded trust relationships:
+
+- **AWS Load Balancer Controller**: `system:serviceaccount:aws-load-balancer-controller-system:aws-load-balancer-controller`
+- **Gateway Controller**: `system:serviceaccount:aws-application-networking-system:gateway-api-controller`
+- **EBS CSI Controller**: `system:serviceaccount:kube-system:ebs-csi-controller-sa`
+- **API Gateway Controller**: `system:serviceaccount:kube-system:ack-apigatewayv2-controller`
+- **ADOT Collector**: `system:serviceaccount:fargate-container-insights:adot-collector`
+
+If you need to use different namespaces or service account names, you must modify the IAM trust policies in `iam.tf` accordingly. The variables `aws_lb_controller_namespace`, `aws_lb_controller_service_account_name`, `karpenter_namespace`, and `karpenter_service_account_name` are provided for Helm chart configuration but do not affect the IAM trust policies.
+
+### Network Subnet Sizing
+
+The network module assumes that **public subnets are smaller than or equal to private and database subnets**. This encourages minimizing resource placement in public subnets for security best practices.
