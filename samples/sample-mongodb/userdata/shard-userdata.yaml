@@ -1,0 +1,21 @@
+#cloud-config
+write_files:
+  - path: /etc/yum.repos.d/mongodb-org-8.2.repo
+    content: |
+      [mongodb-org-8.2]
+      name=MongoDB Repository
+      baseurl=https://repo.mongodb.org/yum/amazon/2023/mongodb-org/8.2/x86_64/
+      gpgcheck=1
+      enabled=1
+      gpgkey=https://pgp.mongodb.com/server-8.0.asc
+
+runcmd:
+  - yum install -y mongodb-org
+  - sed -i 's/#port: 27017/port: 27018/' /etc/mongod.conf
+  - sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/' /etc/mongod.conf
+  - echo 'sharding:' >> /etc/mongod.conf
+  - echo '  clusterRole: shardsvr' >> /etc/mongod.conf
+  - echo 'replication:' >> /etc/mongod.conf
+  - echo '  replSetName: ${replica_set_name}' >> /etc/mongod.conf
+  - systemctl enable mongod
+  - systemctl restart mongod
