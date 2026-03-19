@@ -18,3 +18,10 @@ spec:
         name: app-2048
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
