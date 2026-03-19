@@ -17,4 +17,4 @@ spec:
         imagePullPolicy: Always
         name: app-2048
         ports:
-        - containerPort: 80
+        - containerPort: 3000
