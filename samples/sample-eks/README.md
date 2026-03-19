@@ -95,6 +95,7 @@ This project uses IAM Roles for Service Accounts (IRSA) for the AWS Load Balance
    export ADOT_COLLECTOR_ARN=$(terraform output -raw kube_adot_collector_role_arn)
    export EKS_NODE_ROLE_ARN=$(terraform output -raw kube_node_role_arn)
    export KARPENTER_CONTROLLER_ROLE_ARN=$(terraform output -raw kube_karpenter_controller_role_arn)
+   export KARPENTER_NODE_IAM_ROLE_ARN=$(terraform output -raw kube_node_role_arn)
 
    export EKS_NODE_ROLE=$(terraform output -raw kube_node_role_name)
    export KARPENTER_INTERRUPTION_QUEUE=$(terraform output -raw karpenter_interruption_sqs_queue_name)
