@@ -245,7 +245,17 @@ Karpenter is a Kubernetes cluster autoscaler that provisions EC2 instances based
      --wait
    ```
 
-3. **Optional: Enable IRSA for Karpenter:**
+3. **Apply the NodePool and EC2NodeClass:**
+
+   Karpenter requires a `NodePool` and `EC2NodeClass` to define how and where to create nodes. Without these, Karpenter will not provision anything. The `NodePool` sets scheduling constraints (instance types, architectures, capacity type, disruption behavior) and the `EC2NodeClass` configures AWS-specific settings (AMI, IAM role, subnets, security groups).
+
+   By default, Karpenter watches all pending pods across all namespaces in the cluster. Any deployment that creates pods which cannot be scheduled onto existing nodes will trigger Karpenter to provision new nodes that match the `NodePool` constraints. To limit Karpenter to specific workloads, add `nodeSelector` or `nodeAffinity` rules to your pod specs and corresponding `requirements` in the `NodePool`.
+
+   ```bash
+   envsubst < ./kubernetes-manifests/karpenter-nodepool-config.yaml | kubectl apply -f -
+   ```
+
+4. **Optional: Enable IRSA for Karpenter:**
 
    Karpenter uses pod identity by default for authorization. Pod identity is automatically configured in this cluster. If using IRSA, create the service account:
 

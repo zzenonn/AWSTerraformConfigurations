@@ -40,7 +40,7 @@ spec:
   tags:
     intent: apps
     managed-by: karpenter
-  amiFamily: AL2 # Amazon Linux 2
+  amiFamily: AL2023 # Amazon Linux 2023
   role: ${EKS_NODE_ROLE} # replace with node role name
   securityGroupSelectorTerms:
   - tags:
@@ -51,7 +51,4 @@ spec:
   - tags:
       kubernetes.io/cluster/${EKS_CLUSTER_NAME}: "*"
   amiSelectorTerms:
-    - id: "${ARM_AMI_ID}"
-    - id: "${AMD_AMI_ID}"
-#   - id: "${GPU_AMI_ID}" # <- GPU Optimized AMD AMI 
-#   - name: "amazon-eks-node-1.31-*" # <- automatically upgrade when a new AL2 EKS Optimized AMI is released. This is unsafe for production workloads. Validate AMIs in lower environments before deploying them to production.
+    - alias: al2023@latest
