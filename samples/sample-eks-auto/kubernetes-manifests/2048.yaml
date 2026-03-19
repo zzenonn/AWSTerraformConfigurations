@@ -14,7 +14,7 @@ spec:
         app.kubernetes.io/name: app-2048
     spec:
       containers:
-      - image: alexwhen/docker-2048
+      - image: sevenajay/2048
         imagePullPolicy: Always
         name: app-2048
         ports:
